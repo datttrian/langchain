@@ -1,0 +1,1268 @@
+# Quickstart
+
+In this quickstart we'll show you how to:
+
+-   Get setup with LangChain, LangSmith and LangServe
+-   Use the most basic and common components of LangChain: prompt
+    templates, models, and output parsers
+-   Use LangChain Expression Language, the protocol that LangChain is
+    built on and which facilitates component chaining
+-   Build a simple application with LangChain
+-   Trace your application with LangSmith
+-   Serve your application with LangServe
+
+That's a fair amount to cover! Let's dive in.
+
+## Setup
+
+### Jupyter Notebook
+
+This guide (and most of the other guides in the documentation) uses
+<a href="https://jupyter.org/" target="_blank"
+rel="noopener noreferrer">Jupyter notebooks</a> and assumes the reader
+is as well. Jupyter notebooks are perfect for learning how to work with
+LLM systems because oftentimes things can go wrong (unexpected output,
+API down, etc) and going through guides in an interactive environment is
+a great way to better understand them.
+
+You do not NEED to go through the guide in a Jupyter Notebook, but it is
+recommended. See <a href="https://jupyter.org/install" target="_blank"
+rel="noopener noreferrer">here</a> for instructions on how to install.
+
+### Installation
+
+To install LangChain run:
+
+-   Pip
+-   Conda
+
+``` prism-code
+pip install langchain
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+``` prism-code
+conda install langchain -c conda-forge
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+For more details, see our [Installation
+guide](/v0.1/docs/get_started/installation/).
+
+### LangSmith<a href="#langsmith" class="hash-link"
+aria-label="Direct link to LangSmith"
+title="Direct link to LangSmith">​</a>
+
+Many of the applications you build with LangChain will contain multiple
+steps with multiple invocations of LLM calls. As these applications get
+more and more complex, it becomes crucial to be able to inspect what
+exactly is going on inside your chain or agent. The best way to do this
+is with <a href="https://smith.langchain.com" target="_blank"
+rel="noopener noreferrer">LangSmith</a>.
+
+Note that LangSmith is not needed, but it is helpful. If you do want to
+use LangSmith, after you sign up at the link above, make sure to set
+your environment variables to start logging traces:
+
+``` prism-code
+export LANGCHAIN_TRACING_V2="true"
+export LANGCHAIN_API_KEY="..."
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+## Building with LangChain<a href="#building-with-langchain" class="hash-link"
+aria-label="Direct link to Building with LangChain"
+title="Direct link to Building with LangChain">​</a>
+
+LangChain enables building application that connect external sources of
+data and computation to LLMs. In this quickstart, we will walk through a
+few different ways of doing that. We will start with a simple LLM chain,
+which just relies on information in the prompt template to respond.
+Next, we will build a retrieval chain, which fetches data from a
+separate database and passes that into the prompt template. We will then
+add in chat history, to create a conversation retrieval chain. This
+allows you to interact in a chat manner with this LLM, so it remembers
+previous questions. Finally, we will build an agent - which utilizes an
+LLM to determine whether or not it needs to fetch data to answer
+questions. We will cover these at a high level, but there are lot of
+details to all of these! We will link to relevant docs.
+
+## LLM Chain<a href="#llm-chain" class="hash-link"
+aria-label="Direct link to LLM Chain"
+title="Direct link to LLM Chain">​</a>
+
+We'll show how to use models available via API, like OpenAI, and local
+open source models, using integrations like Ollama.
+
+-   OpenAI
+-   Local (using Ollama)
+-   Anthropic
+-   Cohere
+
+First we'll need to import the LangChain x OpenAI integration package.
+
+``` prism-code
+pip install langchain-openai
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Accessing the API requires an API key, which you can get by creating an
+account and heading
+<a href="https://platform.openai.com/account/api-keys" target="_blank"
+rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
+it as an environment variable by running:
+
+``` prism-code
+export OPENAI_API_KEY="..."
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can then initialize the model:
+
+``` prism-code
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+
+If you'd prefer not to set an environment variable you can pass the key
+in directly via the `api_key` named parameter when initiating the OpenAI
+LLM class:
+
+``` prism-code
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(api_key="...")
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+
+<a href="https://ollama.ai/" target="_blank"
+rel="noopener noreferrer">Ollama</a> allows you to run open-source large
+language models, such as Llama 2, locally.
+
+First, follow
+<a href="https://github.com/jmorganca/ollama" target="_blank"
+rel="noopener noreferrer">these instructions</a> to set up and run a
+local Ollama instance:
+
+-   <a href="https://ollama.ai/download" target="_blank"
+    rel="noopener noreferrer">Download</a>
+-   Fetch a model via `ollama pull llama2`
+
+Then, make sure the Ollama server is running. After that, you can do:
+
+``` prism-code
+from langchain_community.llms import Ollama
+llm = Ollama(model="llama2")
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [Ollama](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html)
+
+First we'll need to import the LangChain x Anthropic package.
+
+``` prism-code
+pip install langchain-anthropic
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Accessing the API requires an API key, which you can get by creating an
+account <a href="https://claude.ai/login" target="_blank"
+rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
+it as an environment variable by running:
+
+``` prism-code
+export ANTHROPIC_API_KEY="..."
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can then initialize the model:
+
+``` prism-code
+from langchain_anthropic import ChatAnthropic
+
+llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0.2, max_tokens=1024)
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatAnthropic](https://api.python.langchain.com/en/latest/chat_models/langchain_anthropic.chat_models.ChatAnthropic.html)
+
+If you'd prefer not to set an environment variable you can pass the key
+in directly via the `api_key` named parameter when initiating the
+Anthropic Chat Model class:
+
+``` prism-code
+llm = ChatAnthropic(api_key="...")
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+First we'll need to import the Cohere SDK package.
+
+``` prism-code
+pip install langchain-cohere
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Accessing the API requires an API key, which you can get by creating an
+account and heading
+<a href="https://dashboard.cohere.com/api-keys" target="_blank"
+rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
+it as an environment variable by running:
+
+``` prism-code
+export COHERE_API_KEY="..."
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can then initialize the model:
+
+``` prism-code
+from langchain_cohere import ChatCohere
+
+llm = ChatCohere()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
+
+If you'd prefer not to set an environment variable you can pass the key
+in directly via the `cohere_api_key` named parameter when initiating the
+Cohere LLM class:
+
+``` prism-code
+from langchain_cohere import ChatCohere
+
+llm = ChatCohere(cohere_api_key="...")
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
+
+Once you've installed and initialized the LLM of your choice, we can try
+using it! Let's ask it what LangSmith is - this is something that wasn't
+present in the training data so it shouldn't have a very good response.
+
+``` prism-code
+llm.invoke("how can langsmith help with testing?")
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can also guide its response with a prompt template. Prompt templates
+convert raw user input to better input to the LLM.
+
+``` prism-code
+from langchain_core.prompts import ChatPromptTemplate
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a world class technical documentation writer."),
+    ("user", "{input}")
+])
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
+
+We can now combine these into a simple LLM chain:
+
+``` prism-code
+chain = prompt | llm 
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can now invoke it and ask the same question. It still won't know the
+answer, but it should respond in a more proper tone for a technical
+writer!
+
+``` prism-code
+chain.invoke({"input": "how can langsmith help with testing?"})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+The output of a ChatModel (and therefore, of this chain) is a message.
+However, it's often much more convenient to work with strings. Let's add
+a simple output parser to convert the chat message to a string.
+
+``` prism-code
+from langchain_core.output_parsers import StrOutputParser
+
+output_parser = StrOutputParser()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [StrOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.string.StrOutputParser.html)
+
+We can now add this to the previous chain:
+
+``` prism-code
+chain = prompt | llm | output_parser
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can now invoke it and ask the same question. The answer will now be a
+string (rather than a ChatMessage).
+
+``` prism-code
+chain.invoke({"input": "how can langsmith help with testing?"})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+### Diving Deeper<a href="#diving-deeper" class="hash-link"
+aria-label="Direct link to Diving Deeper"
+title="Direct link to Diving Deeper">​</a>
+
+We've now successfully set up a basic LLM chain. We only touched on the
+basics of prompts, models, and output parsers - for a deeper dive into
+everything mentioned here, see [this section of
+documentation](/v0.1/docs/modules/model_io/).
+
+## Retrieval Chain<a href="#retrieval-chain" class="hash-link"
+aria-label="Direct link to Retrieval Chain"
+title="Direct link to Retrieval Chain">​</a>
+
+To properly answer the original question ("how can langsmith help with
+testing?"), we need to provide additional context to the LLM. We can do
+this via *retrieval*. Retrieval is useful when you have **too much
+data** to pass to the LLM directly. You can then use a retriever to
+fetch only the most relevant pieces and pass those in.
+
+In this process, we will look up relevant documents from a *Retriever*
+and then pass them into the prompt. A Retriever can be backed by
+anything - a SQL table, the internet, etc - but in this instance we will
+populate a vector store and use that as a retriever. For more
+information on vectorstores, see [this
+documentation](/v0.1/docs/modules/data_connection/vectorstores/).
+
+First, we need to load the data that we want to index. To do this, we
+will use the WebBaseLoader. This requires installing
+<a href="https://beautiful-soup-4.readthedocs.io/en/latest/"
+target="_blank" rel="noopener noreferrer">BeautifulSoup</a>:
+
+``` prism-code
+pip install beautifulsoup4
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+After that, we can import and use WebBaseLoader.
+
+``` prism-code
+from langchain_community.document_loaders import WebBaseLoader
+loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
+
+docs = loader.load()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
+
+Next, we need to index it into a vectorstore. This requires a few
+components, namely an [embedding
+model](/v0.1/docs/modules/data_connection/text_embedding/) and a
+[vectorstore](/v0.1/docs/modules/data_connection/vectorstores/).
+
+For embedding models, we once again provide examples for accessing via
+API or by running local models.
+
+-   OpenAI (API)
+-   Local (using Ollama)
+-   Cohere (API)
+
+Make sure you have the \`langchain_openai\` package installed an the
+appropriate environment variables set (these are the same as needed for
+the LLM).
+
+``` prism-code
+from langchain_openai import OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
+
+Make sure you have Ollama running (same set up as with the LLM).
+
+``` prism-code
+from langchain_community.embeddings import OllamaEmbeddings
+
+embeddings = OllamaEmbeddings()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [OllamaEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.ollama.OllamaEmbeddings.html)
+
+Make sure you have the `cohere` package installed and the appropriate
+environment variables set (these are the same as needed for the LLM).
+
+``` prism-code
+from langchain_cohere.embeddings import CohereEmbeddings
+
+embeddings = CohereEmbeddings()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [CohereEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_cohere.embeddings.CohereEmbeddings.html)
+
+Now, we can use this embedding model to ingest documents into a
+vectorstore. We will use a simple local vectorstore,
+[FAISS](/v0.1/docs/integrations/vectorstores/faiss/), for simplicity's
+sake.
+
+First we need to install the required packages for that:
+
+``` prism-code
+pip install faiss-cpu
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Then we can build our index:
+
+``` prism-code
+from langchain_community.vectorstores import FAISS
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+text_splitter = RecursiveCharacterTextSplitter()
+documents = text_splitter.split_documents(docs)
+vector = FAISS.from_documents(documents, embeddings)
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
+-   [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
+
+Now that we have this data indexed in a vectorstore, we will create a
+retrieval chain. This chain will take an incoming question, look up
+relevant documents, then pass those documents along with the original
+question into an LLM and ask it to answer the original question.
+
+First, let's set up the chain that takes a question and the retrieved
+documents and generates an answer.
+
+``` prism-code
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
+prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
+
+<context>
+{context}
+</context>
+
+Question: {input}""")
+
+document_chain = create_stuff_documents_chain(llm, prompt)
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html)
+
+If we wanted to, we could run this ourselves by passing in documents
+directly:
+
+``` prism-code
+from langchain_core.documents import Document
+
+document_chain.invoke({
+    "input": "how can langsmith help with testing?",
+    "context": [Document(page_content="langsmith can let you visualize test results")]
+})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)
+
+However, we want the documents to first come from the retriever we just
+set up. That way, we can use the retriever to dynamically select the
+most relevant documents and pass those in for a given question.
+
+``` prism-code
+from langchain.chains import create_retrieval_chain
+
+retriever = vector.as_retriever()
+retrieval_chain = create_retrieval_chain(retriever, document_chain)
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html)
+
+We can now invoke this chain. This returns a dictionary - the response
+from the LLM is in the `answer` key
+
+``` prism-code
+response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"})
+print(response["answer"])
+
+# LangSmith offers several features that can help with testing:...
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+This answer should be much more accurate!
+
+### Diving Deeper<a href="#diving-deeper-1" class="hash-link"
+aria-label="Direct link to Diving Deeper"
+title="Direct link to Diving Deeper">​</a>
+
+We've now successfully set up a basic retrieval chain. We only touched
+on the basics of retrieval - for a deeper dive into everything mentioned
+here, see [this section of
+documentation](/v0.1/docs/modules/data_connection/).
+
+## Conversation Retrieval Chain<a href="#conversation-retrieval-chain" class="hash-link"
+aria-label="Direct link to Conversation Retrieval Chain"
+title="Direct link to Conversation Retrieval Chain">​</a>
+
+The chain we've created so far can only answer single questions. One of
+the main types of LLM applications that people are building are chat
+bots. So how do we turn this chain into one that can answer follow up
+questions?
+
+We can still use the `create_retrieval_chain` function, but we need to
+change two things:
+
+1.  The retrieval method should now not just work on the most recent
+    input, but rather should take the whole history into account.
+2.  The final LLM chain should likewise take the whole history into
+    account
+
+**Updating Retrieval**
+
+In order to update retrieval, we will create a new chain. This chain
+will take in the most recent input (`input`) and the conversation
+history (`chat_history`) and use an LLM to generate a search query.
+
+``` prism-code
+from langchain.chains import create_history_aware_retriever
+from langchain_core.prompts import MessagesPlaceholder
+
+# First we need a prompt that we can pass into an LLM to generate this search query
+
+prompt = ChatPromptTemplate.from_messages([
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("user", "{input}"),
+    ("user", "Given the above conversation, generate a search query to look up to get information relevant to the conversation")
+])
+retriever_chain = create_history_aware_retriever(llm, retriever, prompt)
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html)
+-   [MessagesPlaceholder](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.MessagesPlaceholder.html)
+
+We can test this out by passing in an instance where the user asks a
+follow-up question.
+
+``` prism-code
+from langchain_core.messages import HumanMessage, AIMessage
+
+chat_history = [HumanMessage(content="Can LangSmith help test my LLM applications?"), AIMessage(content="Yes!")]
+retriever_chain.invoke({
+    "chat_history": chat_history,
+    "input": "Tell me how"
+})
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html)
+-   [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html)
+
+You should see that this returns documents about testing in LangSmith.
+This is because the LLM generated a new query, combining the chat
+history with the follow-up question.
+
+Now that we have this new retriever, we can create a new chain to
+continue the conversation with these retrieved documents in mind.
+
+``` prism-code
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Answer the user's questions based on the below context:\n\n{context}"),
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("user", "{input}"),
+])
+document_chain = create_stuff_documents_chain(llm, prompt)
+
+retrieval_chain = create_retrieval_chain(retriever_chain, document_chain)
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can now test this out end-to-end:
+
+``` prism-code
+chat_history = [HumanMessage(content="Can LangSmith help test my LLM applications?"), AIMessage(content="Yes!")]
+retrieval_chain.invoke({
+    "chat_history": chat_history,
+    "input": "Tell me how"
+})
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can see that this gives a coherent answer - we've successfully turned
+our retrieval chain into a chatbot!
+
+## Agent<a href="#agent" class="hash-link" aria-label="Direct link to Agent"
+title="Direct link to Agent">​</a>
+
+We've so far created examples of chains - where each step is known ahead
+of time. The final thing we will create is an agent - where the LLM
+decides what steps to take.
+
+**NOTE: for this example we will only show how to create an agent using
+OpenAI models, as local models are not reliable enough yet.**
+
+One of the first things to do when building an agent is to decide what
+tools it should have access to. For this example, we will give the agent
+access to two tools:
+
+1.  The retriever we just created. This will let it easily answer
+    questions about LangSmith
+2.  A search tool. This will let it easily answer questions that require
+    up-to-date information.
+
+First, let's set up a tool for the retriever we just created:
+
+``` prism-code
+from langchain.tools.retriever import create_retriever_tool
+
+retriever_tool = create_retriever_tool(
+    retriever,
+    "langsmith_search",
+    "Search for information about LangSmith. For any questions about LangSmith, you must use this tool!",
+)
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
+
+The search tool that we will use is
+[Tavily](/v0.1/docs/integrations/retrievers/tavily/). This will require
+an API key (they have generous free tier). After creating it on their
+platform, you need to set it as an environment variable:
+
+``` prism-code
+export TAVILY_API_KEY=...
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+If you do not want to set up an API key, you can skip creating this
+tool.
+
+``` prism-code
+from langchain_community.tools.tavily_search import TavilySearchResults
+
+search = TavilySearchResults()
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
+
+We can now create a list of the tools we want to work with:
+
+``` prism-code
+tools = [retriever_tool, search]
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Now that we have the tools, we can create an agent to use them. We will
+go over this pretty quickly - for a deeper dive into what exactly is
+going on, check out the [Agent's Getting Started
+documentation](/v0.1/docs/modules/agents/)
+
+Install langchain hub first
+
+``` prism-code
+pip install langchainhub
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Install the langchain-openai package To interact with OpenAI we need to
+use langchain-openai which connects with OpenAI
+SDK\[https://github.com/langchain-ai/langchain/tree/master/libs/partners/openai\].
+
+``` prism-code
+pip install langchain-openai
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+Now we can use it to get a predefined prompt
+
+``` prism-code
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from langchain.agents import create_openai_functions_agent
+from langchain.agents import AgentExecutor
+
+# Get the prompt to use - you can modify this!
+prompt = hub.pull("hwchase17/openai-functions-agent")
+
+# You need to set OPENAI_API_KEY environment variable or pass it as argument `api_key`.
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+-   [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
+-   [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
+
+We can now invoke the agent and see how it responds! We can ask it
+questions about LangSmith:
+
+``` prism-code
+agent_executor.invoke({"input": "how can langsmith help with testing?"})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can ask it about the weather:
+
+``` prism-code
+agent_executor.invoke({"input": "what is the weather in SF?"})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+We can have conversations with it:
+
+``` prism-code
+chat_history = [HumanMessage(content="Can LangSmith help test my LLM applications?"), AIMessage(content="Yes!")]
+agent_executor.invoke({
+    "chat_history": chat_history,
+    "input": "Tell me how"
+})
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+### Diving Deeper<a href="#diving-deeper-2" class="hash-link"
+aria-label="Direct link to Diving Deeper"
+title="Direct link to Diving Deeper">​</a>
+
+We've now successfully set up a basic agent. We only touched on the
+basics of agents - for a deeper dive into everything mentioned here, see
+[this section of documentation](/v0.1/docs/modules/agents/).
+
+## Serving with LangServe<a href="#serving-with-langserve" class="hash-link"
+aria-label="Direct link to Serving with LangServe"
+title="Direct link to Serving with LangServe">​</a>
+
+Now that we've built an application, we need to serve it. That's where
+LangServe comes in. LangServe helps developers deploy LangChain chains
+as a REST API. You do not need to use LangServe to use LangChain, but in
+this guide we'll show how you can deploy your app with LangServe.
+
+While the first part of this guide was intended to be run in a Jupyter
+Notebook, we will now move out of that. We will be creating a Python
+file and then interacting with it from the command line.
+
+Install with:
+
+``` prism-code
+pip install "langserve[all]"
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+### Server<a href="#server" class="hash-link" aria-label="Direct link to Server"
+title="Direct link to Server">​</a>
+
+To create a server for our application we'll make a `serve.py` file.
+This will contain our logic for serving our application. It consists of
+three things:
+
+1.  The definition of our chain that we just built above
+2.  Our FastAPI app
+3.  A definition of a route from which to serve the chain, which is done
+    with `langserve.add_routes`
+
+``` prism-code
+#!/usr/bin/env python
+from typing import List
+
+from fastapi import FastAPI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.tools.retriever import create_retriever_tool
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain import hub
+from langchain.agents import create_openai_functions_agent
+from langchain.agents import AgentExecutor
+from langchain.pydantic_v1 import BaseModel, Field
+from langchain_core.messages import BaseMessage
+from langserve import add_routes
+
+# 1. Load Retriever
+loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
+docs = loader.load()
+text_splitter = RecursiveCharacterTextSplitter()
+documents = text_splitter.split_documents(docs)
+embeddings = OpenAIEmbeddings()
+vector = FAISS.from_documents(documents, embeddings)
+retriever = vector.as_retriever()
+
+# 2. Create Tools
+retriever_tool = create_retriever_tool(
+    retriever,
+    "langsmith_search",
+    "Search for information about LangSmith. For any questions about LangSmith, you must use this tool!",
+)
+search = TavilySearchResults()
+tools = [retriever_tool, search]
+
+
+# 3. Create Agent
+prompt = hub.pull("hwchase17/openai-functions-agent")
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+
+# 4. App definition
+app = FastAPI(
+  title="LangChain Server",
+  version="1.0",
+  description="A simple API server using LangChain's Runnable interfaces",
+)
+
+# 5. Adding chain route
+
+# We need to add these input/output schemas because the current AgentExecutor
+# is lacking in schemas.
+
+class Input(BaseModel):
+    input: str
+    chat_history: List[BaseMessage] = Field(
+        ...,
+        extra={"widget": {"type": "chat", "input": "location"}},
+    )
+
+
+class Output(BaseModel):
+    output: str
+
+add_routes(
+    app,
+    agent_executor.with_types(input_type=Input, output_type=Output),
+    path="/agent",
+)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="localhost", port=8000)
+```
+
+<img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJ3b3JkV3JhcEJ1dHRvbkljb25fQndtYSIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQgMTloNnYtMkg0djJ6TTIwIDVINHYyaDE2VjV6bS0zIDZINHYyaDEzLjI1YzEuMSAwIDIgLjkgMiAycy0uOSAyLTIgMkgxNXYtMmwtMyAzbDMgM3YtMmgyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00eiIgLz48L3N2Zz4="
+class="wordWrapButtonIcon_Bwma" />
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+#### API Reference:
+
+-   [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
+-   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+-   [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
+-   [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
+-   [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
+-   [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
+-   [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
+-   [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
+-   [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
+-   [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
+-   [BaseMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.base.BaseMessage.html)
+
+And that's it! If we execute this file:
+
+``` prism-code
+python serve.py
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+we should see our chain being served at localhost:8000.
+
+### Playground<a href="#playground" class="hash-link"
+aria-label="Direct link to Playground"
+title="Direct link to Playground">​</a>
+
+Every LangServe service comes with a simple built-in UI for configuring
+and invoking the application with streaming output and visibility into
+intermediate steps. Head to http://localhost:8000/agent/playground/ to
+try it out! Pass in the same question as before - "how can langsmith
+help with testing?" - and it should respond same as before.
+
+### Client<a href="#client" class="hash-link" aria-label="Direct link to Client"
+title="Direct link to Client">​</a>
+
+Now let's set up a client for programmatically interacting with our
+service. We can easily do this with the
+`[langserve.RemoteRunnable](/docs/langserve#client)`. Using this, we can
+interact with the served chain as if it were running client-side.
+
+``` prism-code
+from langserve import RemoteRunnable
+
+remote_chain = RemoteRunnable("http://localhost:8000/agent/")
+remote_chain.invoke({
+    "input": "how can langsmith help with testing?",
+    "chat_history": []  # Providing an empty list as this is the first call
+})
+```
+
+<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
+class="copyButtonIcon_y97N" /><img
+src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
+class="copyButtonSuccessIcon_LjdS" /></span>
+
+To learn more about the many other features of LangServe [head
+here](/v0.1/docs/langserve/).
+
+## Next steps<a href="#next-steps" class="hash-link"
+aria-label="Direct link to Next steps"
+title="Direct link to Next steps">​</a>
+
+We've touched on how to build an application with LangChain, how to
+trace it with LangSmith, and how to serve it with LangServe. There are a
+lot more features in all three of these than we can cover here. To
+continue on your journey, we recommend you read the following (in
+order):
+
+-   All of these features are backed by [LangChain Expression Language
+    (LCEL)](/v0.1/docs/expression_language/) - a way to chain these
+    components together. Check out that documentation to better
+    understand how to create custom chains.
+-   [Model IO](/v0.1/docs/modules/model_io/) covers more details of
+    prompts, LLMs, and output parsers.
+-   [Retrieval](/v0.1/docs/modules/data_connection/) covers more details
+    of everything related to retrieval
+-   [Agents](/v0.1/docs/modules/agents/) covers details of everything
+    related to agents
+-   Explore common [end-to-end use cases](/v0.1/docs/use_cases/) and
+    [template applications](/v0.1/docs/templates/)
+-   [Read up on LangSmith](/v0.1/docs/langsmith/), the platform for
+    debugging, testing, monitoring and more
+-   Learn more about serving your applications with
+    [LangServe](/v0.1/docs/langserve/)
