@@ -1,4 +1,5 @@
 import os
+
 import openai
 from dotenv import load_dotenv
 from langchain.chains import create_retrieval_chain
@@ -32,6 +33,9 @@ documents = text_splitter.split_documents(docs)
 # Create a vector store (FAISS) from the document embeddings
 vector = FAISS.from_documents(documents, embeddings)
 
+# Set up a retriever using the vector store to fetch relevant documents based on the query
+retriever = vector.as_retriever()
+
 # Define the prompt template for the language model to use when generating answers
 prompt = ChatPromptTemplate.from_template(
     """Answer the following question based only on the provided context:
@@ -46,8 +50,6 @@ Question: {input}"""
 # Create a document chain that will take the documents and the prompt to generate answers
 document_chain = create_stuff_documents_chain(llm, prompt)
 
-# Set up a retriever using the vector store to fetch relevant documents based on the query
-retriever = vector.as_retriever()
 
 # Create a retrieval chain that combines the retriever and the document chain
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
