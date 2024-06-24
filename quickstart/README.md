@@ -2,11 +2,9 @@
 
 In this quickstart we'll show you how to:
 
-- Get setup with LangChain, LangSmith and LangServe
-- Use the most basic and common components of LangChain: prompt
-    templates, models, and output parsers
-- Use LangChain Expression Language, the protocol that LangChain is
-    built on and which facilitates component chaining
+- Get setup with LangChain, LangSmith, and LangServe
+- Use the most basic and common components of LangChain: prompt templates, models, and output parsers
+- Use LangChain Expression Language, the protocol that LangChain is built on and which facilitates component chaining
 - Build a simple application with LangChain
 - Trace your application with LangSmith
 - Serve your application with LangServe
@@ -17,17 +15,9 @@ That's a fair amount to cover! Let's dive in.
 
 ### Jupyter Notebook
 
-This guide (and most of the other guides in the documentation) uses
-<a href="https://jupyter.org/" target="_blank"
-rel="noopener noreferrer">Jupyter notebooks</a> and assumes the reader
-is as well. Jupyter notebooks are perfect for learning how to work with
-LLM systems because oftentimes things can go wrong (unexpected output,
-API down, etc) and going through guides in an interactive environment is
-a great way to better understand them.
+This guide (and most of the other guides in the documentation) uses [Jupyter notebooks](https://jupyter.org/) and assumes the reader is as well. Jupyter notebooks are perfect for learning how to work with LLM systems because oftentimes things can go wrong (unexpected output, API down, etc.) and going through guides in an interactive environment is a great way to better understand them.
 
-You do not NEED to go through the guide in a Jupyter Notebook, but it is
-recommended. See <a href="https://jupyter.org/install" target="_blank"
-rel="noopener noreferrer">here</a> for instructions on how to install.
+You do not NEED to go through the guide in a Jupyter Notebook, but it is recommended. See [here](https://jupyter.org/install) for instructions on how to install.
 
 ### Installation
 
@@ -49,16 +39,9 @@ For more details, see our [Installation guide](/v0.1/docs/get_started/installati
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple
-steps with multiple invocations of LLM calls. As these applications get
-more and more complex, it becomes crucial to be able to inspect what
-exactly is going on inside your chain or agent. The best way to do this
-is with <a href="https://smith.langchain.com" target="_blank"
-rel="noopener noreferrer">LangSmith</a>.
+Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls. As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent. The best way to do this is with [LangSmith](https://smith.langchain.com).
 
-Note that LangSmith is not needed, but it is helpful. If you do want to
-use LangSmith, after you sign up at the link above, make sure to set
-your environment variables to start logging traces:
+Note that LangSmith is not needed, but it is helpful. If you do want to use LangSmith, after you sign up at the link above, make sure to set your environment variables to start logging traces:
 
 ```sh
 export LANGCHAIN_TRACING_V2="true"
@@ -67,37 +50,21 @@ export LANGCHAIN_API_KEY="..."
 
 ## Building with LangChain
 
-LangChain enables building application that connect external sources of
-data and computation to LLMs. In this quickstart, we will walk through a
-few different ways of doing that. We will start with a simple LLM chain,
-which just relies on information in the prompt template to respond.
-Next, we will build a retrieval chain, which fetches data from a
-separate database and passes that into the prompt template. We will then
-add in chat history, to create a conversation retrieval chain. This
-allows you to interact in a chat manner with this LLM, so it remembers
-previous questions. Finally, we will build an agent - which utilizes an
-LLM to determine whether or not it needs to fetch data to answer
-questions. We will cover these at a high level, but there are lot of
-details to all of these! We will link to relevant docs.
+LangChain enables building applications that connect external sources of data and computation to LLMs. In this quickstart, we will walk through a few different ways of doing that. We will start with a simple LLM chain, which just relies on information in the prompt template to respond. Next, we will build a retrieval chain, which fetches data from a separate database and passes that into the prompt template. We will then add in chat history, to create a conversation retrieval chain. This allows you to interact in a chat manner with this LLM, so it remembers previous questions. Finally, we will build an agent - which utilizes an LLM to determine whether or not it needs to fetch data to answer questions. We will cover these at a high level, but there are a lot of details to all of these! We will link to relevant docs.
 
 ## LLM Chain
 
-We'll show how to use models available via API, like OpenAI, and local
-open source models, using integrations like Ollama.
+We'll show how to use models available via API, like OpenAI, and local open source models, using integrations like Ollama.
 
 ### OpenAI
 
 First we'll need to import the LangChain x OpenAI integration package.
 
-``` prism-code
+```sh
 pip install langchain-openai
 ```
 
-Accessing the API requires an API key, which you can get by creating an
-account and heading
-<a href="https://platform.openai.com/account/api-keys" target="_blank"
-rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
-it as an environment variable by running:
+Accessing the API requires an API key, which you can get by creating an account and heading [here](https://platform.openai.com/account/api-keys). Once we have a key we'll want to set it as an environment variable by running:
 
 ```sh
 export OPENAI_API_KEY="..."
@@ -105,7 +72,7 @@ export OPENAI_API_KEY="..."
 
 We can then initialize the model:
 
-``` prism-code
+```python
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI()
@@ -115,9 +82,7 @@ llm = ChatOpenAI()
 
 - [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
 
-If you'd prefer not to set an environment variable you can pass the key
-in directly via the `api_key` named parameter when initiating the OpenAI
-LLM class:
+If you'd prefer not to set an environment variable you can pass the key in directly via the `api_key` named parameter when initiating the OpenAI LLM class:
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -135,22 +100,16 @@ llm = ChatOpenAI(api_key="...")
 
 ### Cohere
 
-<a href="https://ollama.ai/" target="_blank"
-rel="noopener noreferrer">Ollama</a> allows you to run open-source large
-language models, such as Llama 2, locally.
+[Ollama](https://ollama.ai/) allows you to run open-source large language models, such as Llama 2, locally.
 
-First, follow
-<a href="https://github.com/jmorganca/ollama" target="_blank"
-rel="noopener noreferrer">these instructions</a> to set up and run a
-local Ollama instance:
+First, follow [these instructions](https://github.com/jmorganca/ollama) to set up and run a local Ollama instance:
 
-- <a href="https://ollama.ai/download" target="_blank"
-    rel="noopener noreferrer">Download</a>
+- [Download](https://ollama.ai/download)
 - Fetch a model via `ollama pull llama2`
 
 Then, make sure the Ollama server is running. After that, you can do:
 
-``` prism-code
+```python
 from langchain_community.llms import Ollama
 llm = Ollama(model="llama2")
 ```
@@ -161,22 +120,19 @@ llm = Ollama(model="llama2")
 
 First we'll need to import the LangChain x Anthropic package.
 
-``` prism-code
+```sh
 pip install langchain-anthropic
 ```
 
-Accessing the API requires an API key, which you can get by creating an
-account <a href="https://claude.ai/login" target="_blank"
-rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
-it as an environment variable by running:
+Accessing the API requires an API key, which you can get by creating an account [here](https://claude.ai/login). Once we have a key we'll want to set it as an environment variable by running:
 
-``` prism-code
+```sh
 export ANTHROPIC_API_KEY="..."
 ```
 
 We can then initialize the model:
 
-``` prism-code
+```python
 from langchain_anthropic import ChatAnthropic
 
 llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0.2, max_tokens=1024)
@@ -186,33 +142,27 @@ llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0.2, max_token
 
 - [ChatAnthropic](https://api.python.langchain.com/en/latest/chat_models/langchain_anthropic.chat_models.ChatAnthropic.html)
 
-If you'd prefer not to set an environment variable you can pass the key
-in directly via the `api_key` named parameter when initiating the
-Anthropic Chat Model class:
+If you'd prefer not to set an environment variable you can pass the key in directly via the `api_key` named parameter when initiating the Anthropic Chat Model class:
 
-``` prism-code
+```python
 llm = ChatAnthropic(api_key="...")
 ```
 
 First we'll need to import the Cohere SDK package.
 
-``` prism-code
+```sh
 pip install langchain-cohere
 ```
 
-Accessing the API requires an API key, which you can get by creating an
-account and heading
-<a href="https://dashboard.cohere.com/api-keys" target="_blank"
-rel="noopener noreferrer">here</a>. Once we have a key we'll want to set
-it as an environment variable by running:
+Accessing the API requires an API key, which you can get by creating an account and heading [here](https://dashboard.cohere.com/api-keys). Once we have a key we'll want to set it as an environment variable by running:
 
-``` prism-code
+```sh
 export COHERE_API_KEY="..."
 ```
 
 We can then initialize the model:
 
-``` prism-code
+```python
 from langchain_cohere import ChatCohere
 
 llm = ChatCohere()
@@ -222,11 +172,9 @@ llm = ChatCohere()
 
 - [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
 
-If you'd prefer not to set an environment variable you can pass the key
-in directly via the `cohere_api_key` named parameter when initiating the
-Cohere LLM class:
+If you'd prefer not to set an environment variable you can pass the key in directly via the `cohere_api_key` named parameter when initiating the Cohere LLM class:
 
-``` prism-code
+```python
 from langchain_cohere import ChatCohere
 
 llm = ChatCohere(cohere_api_key="...")
@@ -236,18 +184,15 @@ llm = ChatCohere(cohere_api_key="...")
 
 - [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
 
-Once you've installed and initialized the LLM of your choice, we can try
-using it! Let's ask it what LangSmith is - this is something that wasn't
-present in the training data so it shouldn't have a very good response.
+Once you've installed and initialized the LLM of your choice, we can try using it! Let's ask it what LangSmith is - this is something that wasn't present in the training data so it shouldn't have a very good response.
 
-``` prism-code
+```python
 llm.invoke("how can langsmith help with testing?")
 ```
 
-We can also guide its response with a prompt template. Prompt templates
-convert raw user input to better input to the LLM.
+We can also guide its response with a prompt template. Prompt templates convert raw user input to better input to the LLM.
 
-``` prism-code
+```python
 from langchain_core.prompts import ChatPromptTemplate
 prompt = ChatPromptTemplate.from_messages([
     ("system", "You are a world class technical documentation writer."),
@@ -261,23 +206,19 @@ prompt = ChatPromptTemplate.from_messages([
 
 We can now combine these into a simple LLM chain:
 
-``` prism-code
+```python
 chain = prompt | llm 
 ```
 
-We can now invoke it and ask the same question. It still won't know the
-answer, but it should respond in a more proper tone for a technical
-writer!
+We can now invoke it and ask the same question. It still won't know the answer, but it should respond in a more proper tone for a technical writer!
 
-``` prism-code
+```python
 chain.invoke({"input": "how can langsmith help with testing?"})
 ```
 
-The output of a ChatModel (and therefore, of this chain) is a message.
-However, it's often much more convenient to work with strings. Let's add
-a simple output parser to convert the chat message to a string.
+The output of a ChatModel (and therefore, of this chain) is a message. However, it's often much more convenient to work with strings. Let's add a simple output parser to convert the chat message to a string.
 
-``` prism-code
+```python
 from langchain_core.output_parsers import StrOutputParser
 
 output_parser = StrOutputParser()
@@ -289,26 +230,19 @@ output_parser = StrOutputParser()
 
 We can now add this to the previous chain:
 
-``` prism-code
+```python
 chain = prompt | llm | output_parser
 ```
 
-We can now invoke it and ask the same question. The answer will now be a
-string (rather than a ChatMessage).
+We can now invoke it and ask the same question. The answer will now be a string (rather than a ChatMessage).
 
-``` prism-code
+```python
 chain.invoke({"input": "how can langsmith help with testing?"})
 ```
 
-### Diving Deeper<a href="#diving-deeper" class="hash-link"
+### Diving Deeper
 
-aria-label="Direct link to Diving Deeper"
-title="Direct link to Diving Deeper">​</a>
-
-We've now successfully set up a basic LLM chain. We only touched on the
-basics of prompts, models, and output parsers - for a deeper dive into
-everything mentioned here, see [this section of
-documentation](/v0.1/docs/modules/model_io/).
+We've now successfully set up a basic LLM chain. We only touched on the basics of prompts, models, and output parsers - for a deeper dive into everything mentioned here, see [this section of documentation](/v0.1/docs/modules/model_io/).
 
 ## Retrieval Chain<a href="#retrieval-chain" class="hash-link"
 
