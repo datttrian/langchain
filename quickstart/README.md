@@ -36,16 +36,15 @@ To install LangChain run:
 - Pip
 - Conda
 
-``` prism-code
+```sh
 pip install langchain
 ```
 
-``` prism-code
+```sh
 conda install langchain -c conda-forge
 ```
 
-For more details, see our [Installation
-guide](/v0.1/docs/get_started/installation/).
+For more details, see our [Installation guide](/v0.1/docs/get_started/installation/).
 
 ### LangSmith
 
@@ -60,21 +59,12 @@ Note that LangSmith is not needed, but it is helpful. If you do want to
 use LangSmith, after you sign up at the link above, make sure to set
 your environment variables to start logging traces:
 
-``` prism-code
+```sh
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
-class="copyButtonIcon_y97N" /><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
-class="copyButtonSuccessIcon_LjdS" /></span>
-
-## Building with LangChain<a href="#building-with-langchain" class="hash-link"
-
-aria-label="Direct link to Building with LangChain"
-title="Direct link to Building with LangChain">​</a>
+## Building with LangChain
 
 LangChain enables building application that connect external sources of
 data and computation to LLMs. In this quickstart, we will walk through a
