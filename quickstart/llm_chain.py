@@ -1,16 +1,16 @@
 import os
-from langchain_openai import ChatOpenAI
+
 import openai
 from dotenv import load_dotenv
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 openai.api_key = os.environ["OPENAI_API_KEY"]
-llm = ChatOpenAI()
-result = llm.invoke("how can langsmith help with testing?")
-print(result)
 
+
+llm = ChatOpenAI()
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -19,11 +19,8 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-chain = prompt | llm
-
-chain.invoke({"input": "how can langsmith help with testing?"})
-
 
 output_parser = StrOutputParser()
 chain = prompt | llm | output_parser
-chain.invoke({"input": "how can langsmith help with testing?"})
+result = chain.invoke({"input": "how can langsmith help with testing?"})
+print(result)
