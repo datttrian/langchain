@@ -1,10 +1,12 @@
 import os
+
 import openai
 from dotenv import load_dotenv
-from langchain_community.utilities import SQLDatabase
-from langchain.chains import create_sql_query_chain
-from langchain_openai import ChatOpenAI
 from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
+from langchain_community.utilities import SQLDatabase
+from langchain_openai import ChatOpenAI
+
+from langchain.chains import create_sql_query_chain
 
 # Load environment variables
 load_dotenv()
