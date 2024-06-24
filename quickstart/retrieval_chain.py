@@ -11,9 +11,9 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
-llm = ChatOpenAI()
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
+llm = ChatOpenAI()
 loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
 docs = loader.load()
 
