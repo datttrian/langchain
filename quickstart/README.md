@@ -890,7 +890,7 @@ Every LangServe service comes with a simple built-in UI for configuring and invo
 
 ### Client
 
-Now let's set up a client for programmatically interacting with our service. We can easily do this with the [langserve.RemoteRunnable](/docs/langserve#client). Using this, we can interact with the served chain as if it were running client-side.
+Now let's set up a client for programmatically interacting with our service. We can easily do this with the [langserve.RemoteRunnable](https://python.langchain.com/v0.2/docs/langserve#client). Using this, we can interact with the served chain as if it were running client-side.
 
 ```python
 from langserve import RemoteRunnable
