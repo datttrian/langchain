@@ -2,5 +2,8 @@
     "git.autofetch": true,
     "gitdoc.enabled": true,
     "gitdoc.commitMessageFormat": "ccc, LLL d, kkkk, h:mm a ZZ",
+    "flake8.args": [
+        "--max-line-length=150"
+    ],
     "files.insertFinalNewline": true,
 }
