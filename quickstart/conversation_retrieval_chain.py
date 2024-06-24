@@ -2,14 +2,14 @@ import os
 
 import openai
 from dotenv import load_dotenv
-from langchain.chains import create_history_aware_retriever
+from langchain.chains import create_retrieval_chain, create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import FAISS
-from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.messages import HumanMessage, AIMessage
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -37,8 +37,8 @@ vector = FAISS.from_documents(documents, embeddings)
 # Set up a retriever using the vector store to fetch relevant documents based on the query
 retriever = vector.as_retriever()
 
-# Define the prompt template for the language model to generate the search query
-prompt = ChatPromptTemplate.from_messages(
+# Define the prompt template for the retriever to generate search queries based on conversation history
+retriever_prompt = ChatPromptTemplate.from_messages(
     [
         MessagesPlaceholder(variable_name="chat_history"),
         ("user", "{input}"),
@@ -49,14 +49,35 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+# Create a history-aware retriever
+retriever_chain = create_history_aware_retriever(llm, retriever, retriever_prompt)
+
+# Define the prompt template for the language model to use when generating answers with conversation history
+document_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Answer the user's questions based on the below context:\n\n{context}",
+        ),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user", "{input}"),
+    ]
+)
+
 # Create a document chain that will take the documents and the prompt to generate answers
-document_chain = create_stuff_documents_chain(llm, prompt)
+document_chain = create_stuff_documents_chain(llm, document_prompt)
 
-# Create a retrieval chain that combines the retriever and the document chain
-retriever_chain = create_history_aware_retriever(llm, retriever, prompt)
+# Create a retrieval chain that combines the history-aware retriever and the document chain
+conversation_retrieval_chain = create_retrieval_chain(retriever_chain, document_chain)
 
+# Example usage of the conversation retrieval chain
 chat_history = [
     HumanMessage(content="Can LangSmith help test my LLM applications?"),
     AIMessage(content="Yes!"),
 ]
-retriever_chain.invoke({"chat_history": chat_history, "input": "Tell me how"})
+
+response = conversation_retrieval_chain.invoke(
+    {"chat_history": chat_history, "input": "Tell me how"}
+)
+
+print(response["answer"])
