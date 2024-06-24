@@ -2,14 +2,14 @@
 
 In this quickstart we'll show you how to:
 
--   Get setup with LangChain, LangSmith and LangServe
--   Use the most basic and common components of LangChain: prompt
+- Get setup with LangChain, LangSmith and LangServe
+- Use the most basic and common components of LangChain: prompt
     templates, models, and output parsers
--   Use LangChain Expression Language, the protocol that LangChain is
+- Use LangChain Expression Language, the protocol that LangChain is
     built on and which facilitates component chaining
--   Build a simple application with LangChain
--   Trace your application with LangSmith
--   Serve your application with LangServe
+- Build a simple application with LangChain
+- Trace your application with LangSmith
+- Serve your application with LangServe
 
 That's a fair amount to cover! Let's dive in.
 
@@ -33,35 +33,21 @@ rel="noopener noreferrer">here</a> for instructions on how to install.
 
 To install LangChain run:
 
--   Pip
--   Conda
+- Pip
+- Conda
 
 ``` prism-code
 pip install langchain
 ```
 
-<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
-class="copyButtonIcon_y97N" /><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
-class="copyButtonSuccessIcon_LjdS" /></span>
-
 ``` prism-code
 conda install langchain -c conda-forge
 ```
 
-<span class="copyButtonIcons_eSgA" aria-hidden="true"><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uSWNvbl95OTdOIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOSwyMUg4VjdIMTlNMTksNUg4QTIsMiAwIDAsMCA2LDdWMjFBMiwyIDAgMCwwIDgsMjNIMTlBMiwyIDAgMCwwIDIxLDIxVjdBMiwyIDAgMCwwIDE5LDVNMTYsMUg0QTIsMiAwIDAsMCAyLDNWMTdINFYzSDE2VjFaIiAvPjwvc3ZnPg=="
-class="copyButtonIcon_y97N" /><img
-src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
-class="copyButtonSuccessIcon_LjdS" /></span>
-
 For more details, see our [Installation
 guide](/v0.1/docs/get_started/installation/).
 
-### LangSmith<a href="#langsmith" class="hash-link"
-aria-label="Direct link to LangSmith"
-title="Direct link to LangSmith">​</a>
+### LangSmith
 
 Many of the applications you build with LangChain will contain multiple
 steps with multiple invocations of LLM calls. As these applications get
@@ -86,6 +72,7 @@ src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5Q
 class="copyButtonSuccessIcon_LjdS" /></span>
 
 ## Building with LangChain<a href="#building-with-langchain" class="hash-link"
+
 aria-label="Direct link to Building with LangChain"
 title="Direct link to Building with LangChain">​</a>
 
@@ -103,16 +90,17 @@ questions. We will cover these at a high level, but there are lot of
 details to all of these! We will link to relevant docs.
 
 ## LLM Chain<a href="#llm-chain" class="hash-link"
+
 aria-label="Direct link to LLM Chain"
 title="Direct link to LLM Chain">​</a>
 
 We'll show how to use models available via API, like OpenAI, and local
 open source models, using integrations like Ollama.
 
--   OpenAI
--   Local (using Ollama)
--   Anthropic
--   Cohere
+- OpenAI
+- Local (using Ollama)
+- Anthropic
+- Cohere
 
 First we'll need to import the LangChain x OpenAI integration package.
 
@@ -156,9 +144,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+- [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
 
 If you'd prefer not to set an environment variable you can pass the key
 in directly via the `api_key` named parameter when initiating the OpenAI
@@ -176,9 +164,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+- [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
 
 <a href="https://ollama.ai/" target="_blank"
 rel="noopener noreferrer">Ollama</a> allows you to run open-source large
@@ -189,9 +177,9 @@ First, follow
 rel="noopener noreferrer">these instructions</a> to set up and run a
 local Ollama instance:
 
--   <a href="https://ollama.ai/download" target="_blank"
+- <a href="https://ollama.ai/download" target="_blank"
     rel="noopener noreferrer">Download</a>
--   Fetch a model via `ollama pull llama2`
+- Fetch a model via `ollama pull llama2`
 
 Then, make sure the Ollama server is running. After that, you can do:
 
@@ -206,9 +194,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [Ollama](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html)
+- [Ollama](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html)
 
 First we'll need to import the LangChain x Anthropic package.
 
@@ -251,9 +239,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatAnthropic](https://api.python.langchain.com/en/latest/chat_models/langchain_anthropic.chat_models.ChatAnthropic.html)
+- [ChatAnthropic](https://api.python.langchain.com/en/latest/chat_models/langchain_anthropic.chat_models.ChatAnthropic.html)
 
 If you'd prefer not to set an environment variable you can pass the key
 in directly via the `api_key` named parameter when initiating the
@@ -311,9 +299,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
+- [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
 
 If you'd prefer not to set an environment variable you can pass the key
 in directly via the `cohere_api_key` named parameter when initiating the
@@ -331,9 +319,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
+- [ChatCohere](https://api.python.langchain.com/en/latest/chat_models/langchain_cohere.chat_models.ChatCohere.html)
 
 Once you've installed and initialized the LLM of your choice, we can try
 using it! Let's ask it what LangSmith is - this is something that wasn't
@@ -366,9 +354,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
+- [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
 
 We can now combine these into a simple LLM chain:
 
@@ -412,9 +400,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [StrOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.string.StrOutputParser.html)
+- [StrOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.string.StrOutputParser.html)
 
 We can now add this to the previous chain:
 
@@ -442,6 +430,7 @@ src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5Q
 class="copyButtonSuccessIcon_LjdS" /></span>
 
 ### Diving Deeper<a href="#diving-deeper" class="hash-link"
+
 aria-label="Direct link to Diving Deeper"
 title="Direct link to Diving Deeper">​</a>
 
@@ -451,6 +440,7 @@ everything mentioned here, see [this section of
 documentation](/v0.1/docs/modules/model_io/).
 
 ## Retrieval Chain<a href="#retrieval-chain" class="hash-link"
+
 aria-label="Direct link to Retrieval Chain"
 title="Direct link to Retrieval Chain">​</a>
 
@@ -497,9 +487,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
+- [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
 
 Next, we need to index it into a vectorstore. This requires a few
 components, namely an [embedding
@@ -509,9 +499,9 @@ model](/v0.1/docs/modules/data_connection/text_embedding/) and a
 For embedding models, we once again provide examples for accessing via
 API or by running local models.
 
--   OpenAI (API)
--   Local (using Ollama)
--   Cohere (API)
+- OpenAI (API)
+- Local (using Ollama)
+- Cohere (API)
 
 Make sure you have the \`langchain_openai\` package installed an the
 appropriate environment variables set (these are the same as needed for
@@ -529,9 +519,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
+- [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
 
 Make sure you have Ollama running (same set up as with the LLM).
 
@@ -547,9 +537,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [OllamaEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.ollama.OllamaEmbeddings.html)
+- [OllamaEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.ollama.OllamaEmbeddings.html)
 
 Make sure you have the `cohere` package installed and the appropriate
 environment variables set (these are the same as needed for the LLM).
@@ -566,9 +556,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [CohereEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_cohere.embeddings.CohereEmbeddings.html)
+- [CohereEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_cohere.embeddings.CohereEmbeddings.html)
 
 Now, we can use this embedding model to ingest documents into a
 vectorstore. We will use a simple local vectorstore,
@@ -605,10 +595,10 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
--   [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
+- [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
+- [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
 
 Now that we have this data indexed in a vectorstore, we will create a
 retrieval chain. This chain will take an incoming question, look up
@@ -642,9 +632,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html)
+- [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html)
 
 If we wanted to, we could run this ourselves by passing in documents
 directly:
@@ -664,9 +654,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)
+- [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)
 
 However, we want the documents to first come from the retriever we just
 set up. That way, we can use the retriever to dynamically select the
@@ -685,9 +675,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html)
+- [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html)
 
 We can now invoke this chain. This returns a dictionary - the response
 from the LLM is in the `answer` key
@@ -708,6 +698,7 @@ class="copyButtonSuccessIcon_LjdS" /></span>
 This answer should be much more accurate!
 
 ### Diving Deeper<a href="#diving-deeper-1" class="hash-link"
+
 aria-label="Direct link to Diving Deeper"
 title="Direct link to Diving Deeper">​</a>
 
@@ -717,6 +708,7 @@ here, see [this section of
 documentation](/v0.1/docs/modules/data_connection/).
 
 ## Conversation Retrieval Chain<a href="#conversation-retrieval-chain" class="hash-link"
+
 aria-label="Direct link to Conversation Retrieval Chain"
 title="Direct link to Conversation Retrieval Chain">​</a>
 
@@ -728,9 +720,9 @@ questions?
 We can still use the `create_retrieval_chain` function, but we need to
 change two things:
 
-1.  The retrieval method should now not just work on the most recent
+1. The retrieval method should now not just work on the most recent
     input, but rather should take the whole history into account.
-2.  The final LLM chain should likewise take the whole history into
+2. The final LLM chain should likewise take the whole history into
     account
 
 **Updating Retrieval**
@@ -763,10 +755,10 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html)
--   [MessagesPlaceholder](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.MessagesPlaceholder.html)
+- [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html)
+- [MessagesPlaceholder](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.MessagesPlaceholder.html)
 
 We can test this out by passing in an instance where the user asks a
 follow-up question.
@@ -791,10 +783,10 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html)
--   [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html)
+- [HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html)
+- [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html)
 
 You should see that this returns documents about testing in LangSmith.
 This is because the LLM generated a new query, combining the chat
@@ -844,6 +836,7 @@ We can see that this gives a coherent answer - we've successfully turned
 our retrieval chain into a chatbot!
 
 ## Agent<a href="#agent" class="hash-link" aria-label="Direct link to Agent"
+
 title="Direct link to Agent">​</a>
 
 We've so far created examples of chains - where each step is known ahead
@@ -857,9 +850,9 @@ One of the first things to do when building an agent is to decide what
 tools it should have access to. For this example, we will give the agent
 access to two tools:
 
-1.  The retriever we just created. This will let it easily answer
+1. The retriever we just created. This will let it easily answer
     questions about LangSmith
-2.  A search tool. This will let it easily answer questions that require
+2. A search tool. This will let it easily answer questions that require
     up-to-date information.
 
 First, let's set up a tool for the retriever we just created:
@@ -884,9 +877,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
+- [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
 
 The search tool that we will use is
 [Tavily](/v0.1/docs/integrations/retrievers/tavily/). This will require
@@ -918,9 +911,9 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
+- [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
 
 We can now create a list of the tools we want to work with:
 
@@ -953,7 +946,7 @@ class="copyButtonSuccessIcon_LjdS" /></span>
 
 Install the langchain-openai package To interact with OpenAI we need to
 use langchain-openai which connects with OpenAI
-SDK\[https://github.com/langchain-ai/langchain/tree/master/libs/partners/openai\].
+SDK\[<https://github.com/langchain-ai/langchain/tree/master/libs/partners/openai\>].
 
 ``` prism-code
 pip install langchain-openai
@@ -988,11 +981,11 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
--   [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
--   [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
+- [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+- [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
+- [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
 
 We can now invoke the agent and see how it responds! We can ask it
 questions about LangSmith:
@@ -1040,6 +1033,7 @@ src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5Q
 class="copyButtonSuccessIcon_LjdS" /></span>
 
 ### Diving Deeper<a href="#diving-deeper-2" class="hash-link"
+
 aria-label="Direct link to Diving Deeper"
 title="Direct link to Diving Deeper">​</a>
 
@@ -1048,6 +1042,7 @@ basics of agents - for a deeper dive into everything mentioned here, see
 [this section of documentation](/v0.1/docs/modules/agents/).
 
 ## Serving with LangServe<a href="#serving-with-langserve" class="hash-link"
+
 aria-label="Direct link to Serving with LangServe"
 title="Direct link to Serving with LangServe">​</a>
 
@@ -1073,15 +1068,16 @@ src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5Q
 class="copyButtonSuccessIcon_LjdS" /></span>
 
 ### Server<a href="#server" class="hash-link" aria-label="Direct link to Server"
+
 title="Direct link to Server">​</a>
 
 To create a server for our application we'll make a `serve.py` file.
 This will contain our logic for serving our application. It consists of
 three things:
 
-1.  The definition of our chain that we just built above
-2.  Our FastAPI app
-3.  A definition of a route from which to serve the chain, which is done
+1. The definition of our chain that we just built above
+2. Our FastAPI app
+3. A definition of a route from which to serve the chain, which is done
     with `langserve.add_routes`
 
 ``` prism-code
@@ -1175,19 +1171,19 @@ class="copyButtonIcon_y97N" /><img
 src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjb3B5QnV0dG9uU3VjY2Vzc0ljb25fTGpkUyI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjEsN0w5LDE5TDMuNSwxMy41TDQuOTEsMTIuMDlMOSwxNi4xN0wxOS41OSw1LjU5TDIxLDdaIiAvPjwvc3ZnPg=="
 class="copyButtonSuccessIcon_LjdS" /></span>
 
-#### API Reference:
+#### API Reference
 
--   [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
--   [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
--   [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
--   [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
--   [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
--   [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
--   [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
--   [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
--   [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
--   [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
--   [BaseMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.base.BaseMessage.html)
+- [ChatPromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html)
+- [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
+- [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
+- [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_openai.embeddings.base.OpenAIEmbeddings.html)
+- [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
+- [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
+- [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
+- [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
+- [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
+- [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
+- [BaseMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.base.BaseMessage.html)
 
 And that's it! If we execute this file:
 
@@ -1204,16 +1200,18 @@ class="copyButtonSuccessIcon_LjdS" /></span>
 we should see our chain being served at localhost:8000.
 
 ### Playground<a href="#playground" class="hash-link"
+
 aria-label="Direct link to Playground"
 title="Direct link to Playground">​</a>
 
 Every LangServe service comes with a simple built-in UI for configuring
 and invoking the application with streaming output and visibility into
-intermediate steps. Head to http://localhost:8000/agent/playground/ to
+intermediate steps. Head to <http://localhost:8000/agent/playground/> to
 try it out! Pass in the same question as before - "how can langsmith
 help with testing?" - and it should respond same as before.
 
 ### Client<a href="#client" class="hash-link" aria-label="Direct link to Client"
+
 title="Direct link to Client">​</a>
 
 Now let's set up a client for programmatically interacting with our
@@ -1241,6 +1239,7 @@ To learn more about the many other features of LangServe [head
 here](/v0.1/docs/langserve/).
 
 ## Next steps<a href="#next-steps" class="hash-link"
+
 aria-label="Direct link to Next steps"
 title="Direct link to Next steps">​</a>
 
@@ -1250,19 +1249,19 @@ lot more features in all three of these than we can cover here. To
 continue on your journey, we recommend you read the following (in
 order):
 
--   All of these features are backed by [LangChain Expression Language
+- All of these features are backed by [LangChain Expression Language
     (LCEL)](/v0.1/docs/expression_language/) - a way to chain these
     components together. Check out that documentation to better
     understand how to create custom chains.
--   [Model IO](/v0.1/docs/modules/model_io/) covers more details of
+- [Model IO](/v0.1/docs/modules/model_io/) covers more details of
     prompts, LLMs, and output parsers.
--   [Retrieval](/v0.1/docs/modules/data_connection/) covers more details
+- [Retrieval](/v0.1/docs/modules/data_connection/) covers more details
     of everything related to retrieval
--   [Agents](/v0.1/docs/modules/agents/) covers details of everything
+- [Agents](/v0.1/docs/modules/agents/) covers details of everything
     related to agents
--   Explore common [end-to-end use cases](/v0.1/docs/use_cases/) and
+- Explore common [end-to-end use cases](/v0.1/docs/use_cases/) and
     [template applications](/v0.1/docs/templates/)
--   [Read up on LangSmith](/v0.1/docs/langsmith/), the platform for
+- [Read up on LangSmith](/v0.1/docs/langsmith/), the platform for
     debugging, testing, monitoring and more
--   Learn more about serving your applications with
+- Learn more about serving your applications with
     [LangServe](/v0.1/docs/langserve/)
