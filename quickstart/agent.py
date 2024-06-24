@@ -18,9 +18,6 @@ load_dotenv()
 # Set OpenAI API key from environment variables
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
-# Initialize the language model
-llm = ChatOpenAI()
-
 # Initialize the embeddings model
 embeddings = OpenAIEmbeddings()
 
@@ -45,24 +42,29 @@ retriever_tool = create_retriever_tool(
     "Search for information about LangSmith. For any questions about LangSmith, you must use this tool!",
 )
 
-
+# Set up a search tool
 search = TavilySearchResults()
 
+# Create a list of the tools
 tools = [retriever_tool, search]
-
 
 # Get the prompt to use - you can modify this!
 prompt = hub.pull("hwchase17/openai-functions-agent")
 
-# You need to set OPENAI_API_KEY environment variable or pass it as argument `api_key`.
+# Initialize the language model
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+
+# Create an agent to use the tools
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
+# Ask a question about LangSmith
 agent_executor.invoke({"input": "how can langsmith help with testing?"})
 
+# Ask a question about the weather
 agent_executor.invoke({"input": "what is the weather in SF?"})
 
+# Have conversations about LangSmith helping testing LLM applications
 chat_history = [
     HumanMessage(content="Can LangSmith help test my LLM applications?"),
     AIMessage(content="Yes!"),
