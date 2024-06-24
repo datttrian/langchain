@@ -48,6 +48,7 @@ document_chain = create_stuff_documents_chain(llm, prompt)
 
 # Set up a retriever using the vector store to fetch relevant documents based on the query
 retriever = vector.as_retriever()
+
 # Create a retrieval chain that combines the retriever and the document chain
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
