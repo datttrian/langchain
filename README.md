@@ -4,5 +4,5 @@
 
 ### [Q&A over SQL + CSV](sql)
 
-1. [Chain](chain.py)
-1. [Agent](agent.py)
+1. [Chain](sql/chain.py)
+1. [Agent](sql/agent.py)
