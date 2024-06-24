@@ -23,7 +23,7 @@ agent_executor = create_sql_agent(
 
 result = agent_executor.invoke(
     {
-        "input": "List the total sales per country. Which country's customers spent the most?"
+        "input": "Describe the playlisttrack table"
     }
 )
 
