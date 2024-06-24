@@ -33,12 +33,13 @@ rel="noopener noreferrer">here</a> for instructions on how to install.
 
 To install LangChain run:
 
-- Pip
-- Conda
+#### Pip
 
 ```sh
 pip install langchain
 ```
+
+#### Conda
 
 ```sh
 conda install langchain -c conda-forge
@@ -79,10 +80,7 @@ LLM to determine whether or not it needs to fetch data to answer
 questions. We will cover these at a high level, but there are lot of
 details to all of these! We will link to relevant docs.
 
-## LLM Chain<a href="#llm-chain" class="hash-link"
-
-aria-label="Direct link to LLM Chain"
-title="Direct link to LLM Chain">​</a>
+## LLM Chain
 
 We'll show how to use models available via API, like OpenAI, and local
 open source models, using integrations like Ollama.
