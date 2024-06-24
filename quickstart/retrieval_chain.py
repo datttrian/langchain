@@ -50,7 +50,6 @@ Question: {input}"""
 # Create a document chain that will take the documents and the prompt to generate answers
 document_chain = create_stuff_documents_chain(llm, prompt)
 
-
 # Create a retrieval chain that combines the retriever and the document chain
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
