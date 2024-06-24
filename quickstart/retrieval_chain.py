@@ -17,10 +17,7 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
-
 docs = loader.load()
-
-
 embeddings = OpenAIEmbeddings()
 
 
