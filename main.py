@@ -13,12 +13,6 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 
 db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-chain = create_sql_query_chain(llm, db)
-response = chain.invoke({"question": "How many employees are there"})
-response
-db.run(response)
-
-
 execute_query = QuerySQLDataBaseTool(db=db)
 write_query = create_sql_query_chain(llm, db)
 chain = write_query | execute_query
