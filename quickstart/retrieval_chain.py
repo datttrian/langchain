@@ -18,14 +18,14 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 # Initialize the language model
 llm = ChatOpenAI()
 
-# Initialize the embeddings model using OpenAIEmbeddings
+# Initialize the embeddings model
 embeddings = OpenAIEmbeddings()
 
-# Load documents from a specified web page using WebBaseLoader
+# Load documents from a specified web page
 loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
 docs = loader.load()
 
-# Split the loaded documents into smaller chunks using RecursiveCharacterTextSplitter
+# Split the loaded documents into smaller chunks
 text_splitter = RecursiveCharacterTextSplitter()
 documents = text_splitter.split_documents(docs)
 
