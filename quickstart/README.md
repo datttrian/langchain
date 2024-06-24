@@ -35,7 +35,7 @@ pip install langchain
 conda install langchain -c conda-forge
 ```
 
-For more details, see our [Installation guide](/v0.1/docs/get_started/installation/).
+For more details, see our [Installation guide](https://python.langchain.com/v0.1/docs/get_started/installation/).
 
 ### LangSmith
 
@@ -242,13 +242,13 @@ chain.invoke({"input": "how can langsmith help with testing?"})
 
 ### Diving Deeper
 
-We've now successfully set up a basic LLM chain. We only touched on the basics of prompts, models, and output parsers - for a deeper dive into everything mentioned here, see [this section of documentation](/v0.1/docs/modules/model_io/).
+We've now successfully set up a basic LLM chain. We only touched on the basics of prompts, models, and output parsers - for a deeper dive into everything mentioned here, see [this section of documentation](https://python.langchain.com/v0.1/docs/modules/model_io/).
 
 ## Retrieval Chain
 
 To properly answer the original question ("how can langsmith help with testing?"), we need to provide additional context to the LLM. We can do this via *retrieval*. Retrieval is useful when you have **too much data** to pass to the LLM directly. You can then use a retriever to fetch only the most relevant pieces and pass those in.
 
-In this process, we will look up relevant documents from a *Retriever* and then pass them into the prompt. A Retriever can be backed by anything - a SQL table, the internet, etc - but in this instance, we will populate a vector store and use that as a retriever. For more information on vectorstores, see [this documentation](/v0.1/docs/modules/data_connection/vectorstores/).
+In this process, we will look up relevant documents from a *Retriever* and then pass them into the prompt. A Retriever can be backed by anything - a SQL table, the internet, etc - but in this instance, we will populate a vector store and use that as a retriever. For more information on vectorstores, see [this documentation](https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/).
 
 First, we need to load the data that we want to index. To do this, we will use the WebBaseLoader. This requires installing [BeautifulSoup](https://beautiful-soup-4.readthedocs.io/en/latest/):
 
@@ -269,7 +269,7 @@ docs = loader.load()
 
 - [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html)
 
-Next, we need to index it into a vectorstore. This requires a few components, namely an [embedding model](/v0.1/docs/modules/data_connection/text_embedding/) and a [vectorstore](/v0.1/docs/modules/data_connection/vectorstores/).
+Next, we need to index it into a vectorstore. This requires a few components, namely an [embedding model](https://python.langchain.com/v0.1/docs/modules/data_connection/text_embedding/) and a [vectorstore](https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/).
 
 For embedding models, we once again provide examples for accessing via API or by running local models.
 
@@ -313,7 +313,7 @@ embeddings = CohereEmbeddings()
 
 - [CohereEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_cohere.embeddings.CohereEmbeddings.html)
 
-Now, we can use this embedding model to ingest documents into a vectorstore. We will use a simple local vectorstore, [FAISS](/v0.1/docs/integrations/vectorstores/faiss/), for simplicity's sake.
+Now, we can use this embedding model to ingest documents into a vectorstore. We will use a simple local vectorstore, [FAISS](https://python.langchain.com/v0.1/docs/integrations/vectorstores/faiss/), for simplicity's sake.
 
 First, we need to install the required packages for that:
 
@@ -401,7 +401,7 @@ This answer should be much more accurate!
 
 ### Diving Deeper
 
-We've now successfully set up a basic retrieval chain. We only touched on the basics of retrieval - for a deeper dive into everything mentioned here, see [this section of documentation](/v0.1/docs/modules/data_connection/).
+We've now successfully set up a basic retrieval chain. We only touched on the basics of retrieval - for a deeper dive into everything mentioned here, see [this section of documentation](https://python.langchain.com/v0.1/docs/modules/data_connection/).
 
 ## Conversation Retrieval Chain
 
@@ -508,7 +508,7 @@ retriever_tool = create_retriever_tool(
 
 - [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
 
-The search tool that we will use is [Tavily](/v0.1/docs/integrations/retrievers/tavily/). This will require an API key (they have a generous free tier). After creating it on their platform, you need to set it as an environment variable:
+The search tool that we will use is [Tavily](https://python.langchain.com/v0.1/docs/integrations/retrievers/tavily/). This will require an API key (they have a generous free tier). After creating it on their platform, you need to set it as an environment variable:
 
 ```bash
 export TAVILY_API_KEY=...
@@ -532,7 +532,7 @@ We can now create a list of the tools we want to work with:
 tools = [retriever_tool, search]
 ```
 
-Now that we have the tools, we can create an agent to use them. We will go over this pretty quickly - for a deeper dive into what exactly is going on, check out the [Agent's Getting Started documentation](/v0.1/docs/modules/agents/).
+Now that we have the tools, we can create an agent to use them. We will go over this pretty quickly - for a deeper dive into what exactly is going on, check out the [Agent's Getting Started documentation](https://python.langchain.com/v0.1/docs/modules/agents/).
 
 Install `langchainhub` first:
 
@@ -593,7 +593,7 @@ agent_executor.invoke({
 
 ### Diving Deeper
 
-We've now successfully set up a basic agent. We only touched on the basics of agents - for a deeper dive into everything mentioned here, see [this section of documentation](/v0.1/docs/modules/agents/).
+We've now successfully set up a basic agent. We only touched on the basics of agents - for a deeper dive into everything mentioned here, see [this section of documentation](https://python.langchain.com/v0.1/docs/modules/agents/).
 
 ## Serving with LangServe
 
@@ -737,16 +737,16 @@ remote_chain.invoke({
 })
 ```
 
-To learn more about the many other features of LangServe, [head here](/v0.1/docs/langserve/).
+To learn more about the many other features of LangServe, [head here](https://python.langchain.com/v0.1/docs/langserve/).
 
 ## Next steps
 
 We've touched on how to build an application with LangChain, how to trace it with LangSmith, and how to serve it with LangServe. There are a lot more features in all three of these than we can cover here. To continue on your journey, we recommend you read the following (in order):
 
-- All of these features are backed by [LangChain Expression Language (LCEL)](/v0.1/docs/expression_language/) - a way to chain these components together. Check out that documentation to better understand how to create custom chains.
-- [Model IO](/v0.1/docs/modules/model_io/) covers more details of prompts, LLMs, and output parsers.
-- [Retrieval](/v0.1/docs/modules/data_connection/) covers more details of everything related to retrieval.
-- [Agents](/v0.1/docs/modules/agents/) covers details of everything related to agents.
-- Explore common [end-to-end use cases](/v0.1/docs/use_cases/) and [template applications](/v0.1/docs/templates/).
-- Read up on [LangSmith](/v0.1/docs/langsmith/), the platform for debugging, testing, monitoring and more.
-- Learn more about serving your applications with [LangServe](/v0.1/docs/langserve/).
+- All of these features are backed by [LangChain Expression Language (LCEL)](https://python.langchain.com/v0.1/docs/expression_language/) - a way to chain these components together. Check out that documentation to better understand how to create custom chains.
+- [Model IO](https://python.langchain.com/v0.1/docs/modules/model_io/) covers more details of prompts, LLMs, and output parsers.
+- [Retrieval](https://python.langchain.com/v0.1/docs/modules/data_connection/) covers more details of everything related to retrieval.
+- [Agents](https://python.langchain.com/v0.1/docs/modules/agents/) covers details of everything related to agents.
+- Explore common [end-to-end use cases](https://python.langchain.com/v0.1/docs/use_cases/) and [template applications](https://python.langchain.com/v0.1/docs/templates/).
+- Read up on [LangSmith](https://python.langchain.com/v0.1/docs/langsmith/), the platform for debugging, testing, monitoring and more.
+- Learn more about serving your applications with [LangServe](https://python.langchain.com/v0.1/docs/langserve/).
