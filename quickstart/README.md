@@ -60,16 +60,13 @@ We'll show how to use models available via API, like OpenAI, and local open sour
 
 First we'll need to import the LangChain x OpenAI integration package.
 
-
 ```python
 pip install --quiet langchain-openai
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
-
 
 Accessing the API requires an API key, which you can get by creating an account and heading [here](https://platform.openai.com/account/api-keys). Once we have a key we'll want to set it as an environment variable by running:
 
@@ -78,7 +75,6 @@ export OPENAI_API_KEY="..."
 ```
 
 We can then initialize the model:
-
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -194,20 +190,13 @@ llm = ChatCohere(cohere_api_key="...")
 
 Once you've installed and initialized the LLM of your choice, we can try using it! Let's ask it what LangSmith is - this is something that wasn't present in the training data so it shouldn't have a very good response.
 
-
 ```python
 llm.invoke("how can langsmith help with testing?")
 ```
 
-
-
-
     AIMessage(content='Langsmith can help with testing by providing automated test scripts that can be run to test the functionality and performance of software applications. These test scripts can be customized to simulate various user interactions and scenarios, helping to identify bugs and errors in the software. Langsmith can also help with setting up continuous integration and continuous deployment pipelines to streamline the testing process and ensure that any issues are detected and resolved quickly. Additionally, Langsmith can provide insights and recommendations for improving test coverage and effectiveness, ultimately leading to a more reliable and stable software product.', response_metadata={'token_usage': {'completion_tokens': 106, 'prompt_tokens': 15, 'total_tokens': 121}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-084f5829-a8df-49a6-8c6d-07fb125788c3-0', usage_metadata={'input_tokens': 15, 'output_tokens': 106, 'total_tokens': 121})
 
-
-
 We can also guide its response with a prompt template. Prompt templates convert raw user input to better input to the LLM.
-
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -223,27 +212,19 @@ prompt = ChatPromptTemplate.from_messages([
 
 We can now combine these into a simple LLM chain:
 
-
 ```python
 chain = prompt | llm 
 ```
 
 We can now invoke it and ask the same question. It still won't know the answer, but it should respond in a more proper tone for a technical writer!
 
-
 ```python
 chain.invoke({"input": "how can langsmith help with testing?"})
 ```
 
-
-
-
     AIMessage(content='Langsmith can help with testing in several ways:\n\n1. Automated Testing: Langsmith can generate test cases based on the grammar and language rules defined in the language specification. These test cases can be used to automate testing procedures, ensuring comprehensive coverage and consistency in testing.\n\n2. Test Data Generation: Langsmith can generate realistic and diverse test data for testing different scenarios and edge cases, helping to improve the quality of testing and uncover potential defects in the software.\n\n3. Test Scenario Generation: By defining specific test scenarios in the language specification, Langsmith can assist in generating test scripts or scenarios for different use cases, making it easier to conduct thorough testing of the software.\n\n4. Integration Testing: Langsmith can help in integrating different components or systems by providing a common language and grammar for communication, facilitating better coordination and collaboration in testing activities.\n\nOverall, Langsmith can streamline the testing process, enhance test coverage, and improve the overall quality of software testing by leveraging its language generation capabilities.', response_metadata={'token_usage': {'completion_tokens': 196, 'prompt_tokens': 28, 'total_tokens': 224}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-e0a0f74b-c922-4c1d-949a-bff67be46745-0', usage_metadata={'input_tokens': 28, 'output_tokens': 196, 'total_tokens': 224})
 
-
-
 The output of a ChatModel (and therefore, of this chain) is a message. However, it's often much more convenient to work with strings. Let's add a simple output parser to convert the chat message to a string.
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -257,24 +238,17 @@ output_parser = StrOutputParser()
 
 We can now add this to the previous chain:
 
-
 ```python
 chain = prompt | llm | output_parser
 ```
 
 We can now invoke it and ask the same question. The answer will now be a string (rather than a ChatMessage).
 
-
 ```python
 chain.invoke({"input": "how can langsmith help with testing?"})
 ```
 
-
-
-
     'Langsmith can help with testing in various ways through its natural language processing capabilities. Here are some ways Langsmith can assist with testing:\n\n1. **Test Case Generation**: Langsmith can be used to automatically generate test cases based on natural language requirements or specifications. By analyzing the textual requirements, Langsmith can assist in creating comprehensive test cases that cover different scenarios and edge cases.\n\n2. **Test Data Generation**: Langsmith can also help in generating test data for testing purposes. By understanding the context and requirements specified in natural language, Langsmith can create relevant and diverse test data sets to ensure thorough testing coverage.\n\n3. **Automated Testing**: Langsmith can be integrated with testing frameworks and tools to automate testing processes. By leveraging its natural language processing capabilities, Langsmith can interpret test scripts written in natural language and execute them as automated tests.\n\n4. **Defect Analysis**: Langsmith can assist in analyzing defect reports and identifying patterns or common issues in the reported defects. By processing and analyzing defect descriptions in natural language, Langsmith can help in identifying root causes and potential areas for improvement.\n\n5. **Test Reporting and Analysis**: Langsmith can generate reports and perform analysis on test results using natural language processing techniques. It can help in summarizing test outcomes, identifying trends, and providing insights to stakeholders in a clear and understandable format.\n\nOverall, Langsmith can streamline the testing process, improve test coverage, and enhance the efficiency of testing activities by leveraging its natural language processing capabilities.'
-
-
 
 ### Diving Deeper
 
@@ -288,19 +262,15 @@ In this process, we will look up relevant documents from a *Retriever* and then 
 
 First, we need to load the data that we want to index. To do this, we will use the WebBaseLoader. This requires installing [BeautifulSoup](https://beautiful-soup-4.readthedocs.io/en/latest/):
 
-
 ```python
 pip install --quiet beautifulsoup4
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
 
-
 After that, we can import and use WebBaseLoader.
-
 
 ```python
 from langchain_community.document_loaders import WebBaseLoader
@@ -320,7 +290,6 @@ For embedding models, we once again provide examples for accessing via API or by
 ### OpenAI (API)
 
 Make sure you have the `langchain_openai` package installed and the appropriate environment variables set (these are the same as needed for the LLM).
-
 
 ```python
 from langchain_openai import OpenAIEmbeddings
@@ -364,19 +333,15 @@ Now, we can use this embedding model to ingest documents into a vectorstore. We 
 
 First, we need to install the required packages for that:
 
-
 ```python
 pip install --quiet faiss-cpu
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
 
-
 Then we can build our index:
-
 
 ```python
 from langchain_community.vectorstores import FAISS
@@ -396,7 +361,6 @@ vector = FAISS.from_documents(documents, embeddings)
 Now that we have this data indexed in a vectorstore, we will create a retrieval chain. This chain will take an incoming question, look up relevant documents, then pass those documents along with the original question into an LLM and ask it to answer the original question.
 
 First, let's set up the chain that takes a question and the retrieved documents and generates an answer.
-
 
 ```python
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -418,7 +382,6 @@ document_chain = create_stuff_documents_chain(llm, prompt)
 
 If we wanted to, we could run this ourselves by passing in documents directly:
 
-
 ```python
 from langchain_core.documents import Document
 
@@ -428,19 +391,13 @@ document_chain.invoke({
 })
 ```
 
-
-
-
     'Langsmith can help visualize test results.'
-
-
 
 #### API Reference
 
 - [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)
 
 However, we want the documents to first come from the retriever we just set up. That way, we can use the retriever to dynamically select the most relevant documents and pass those in for a given question.
-
 
 ```python
 from langchain.chains import create_retrieval_chain
@@ -455,7 +412,6 @@ retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
 We can now invoke this chain. This returns a dictionary - the response from the LLM is in the `answer` key:
 
-
 ```python
 response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"})
 print(response["answer"])
@@ -464,7 +420,6 @@ print(response["answer"])
 ```
 
     LangSmith can help with testing by allowing developers to create datasets, run tests on their LLM applications using these datasets, and evaluate the test results. Developers can upload test cases in bulk, create them on the fly, or export them from application traces. LangSmith also supports running custom evaluations (LLM and heuristic based) to score test results, making it easier to track and diagnose regressions in test scores across multiple revisions of an application.
-
 
 This answer should be much more accurate!
 
@@ -484,7 +439,6 @@ We can still use the `create_retrieval_chain` function, but we need to change tw
 **Updating Retrieval**
 
 In order to update retrieval, we will create a new chain. This chain will take in the most recent input (`input`) and the conversation history (`chat_history`) and use an LLM to generate a search query.
-
 
 ```python
 from langchain.chains import create_history_aware_retriever
@@ -507,7 +461,6 @@ retriever_chain = create_history_aware_retriever(llm, retriever, prompt)
 
 We can test this out by passing in an instance where the user asks a follow-up question.
 
-
 ```python
 from langchain_core.messages import HumanMessage, AIMessage
 
@@ -518,15 +471,10 @@ retriever_chain.invoke({
 })
 ```
 
-
-
-
     [Document(page_content='LangSmith User Guide | 🦜️🛠️ LangSmith', metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'}),
      Document(page_content='Skip to main contentGo to API DocsSearchGo to AppQuick StartUser GuideTracingEvaluationProduction Monitoring & AutomationsPrompt HubProxyPricingSelf-HostingCookbookThis is outdated documentation for 🦜️🛠️ LangSmith, which is no longer actively maintained.For up-to-date documentation, see the latest version.User GuideOn this pageLangSmith User GuideLangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.Prototyping\u200bPrototyping LLM applications often involves quick experimentation between prompts, model types, retrieval strategy and other parameters.\nThe ability to rapidly understand how the model is performing — and debug where it is failing — is incredibly important for this phase.Debugging\u200bWhen developing new LLM applications, we suggest having LangSmith tracing enabled by default.\nOftentimes, it isn’t necessary to look at every single trace. However, when things go wrong (an unexpected end result, infinite agent loop, slower than expected execution, higher than expected token usage), it’s extremely helpful to debug by looking through the application traces. LangSmith gives clear visibility and debugging information at each step of an LLM sequence, making it much easier to identify and root-cause issues.\nWe provide native rendering of chat messages, functions, and retrieve documents.Initial Test Set\u200bWhile many developers still ship an initial version of their application based on “vibe checks”, we’ve seen an increasing number of engineering teams start to adopt a more test driven approach. LangSmith allows developers to create datasets, which are collections of inputs and reference outputs, and use these to run tests on their LLM applications.\nThese test cases can be uploaded in bulk, created on the fly, or exported from application traces. LangSmith also makes it easy to run custom evaluations (both LLM and heuristic based) to score test results.Comparison View\u200bWhen prototyping different versions of your applications and making changes, it’s important to see whether or not you’ve regressed with respect to your initial test cases.\nOftentimes, changes in the prompt, retrieval strategy, or model choice can have huge implications in responses produced by your application.\nIn order to get a sense for which variant is performing better, it’s useful to be able to view results for different configurations on the same datapoints side-by-side. We’ve invested heavily in a user-friendly comparison view for test runs to track and diagnose regressions in test scores across multiple revisions of your application.Playground\u200bLangSmith provides a playground environment for rapid iteration and experimentation.\nThis allows you to quickly test out different prompts and models. You can open the playground from any prompt or model run in your trace.', metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'}),
      Document(page_content='meaning that they involve a series of interactions between the user and the application. LangSmith provides a threads view that groups traces from a single conversation together, making it easier to track the performance of and annotate your application across multiple turns.Was this page helpful?You can leave detailed feedback on GitHub.PreviousQuick StartNextOverviewPrototypingBeta TestingProductionCommunityDiscordTwitterGitHubDocs CodeLangSmith SDKPythonJS/TSMoreHomepageBlogLangChain Python DocsLangChain JS/TS DocsCopyright © 2024 LangChain, Inc.', metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'}),
      Document(page_content="Every playground run is logged in the system and can be used to create test cases or compare with other runs.Beta Testing\u200bBeta testing allows developers to collect more data on how their LLM applications are performing in real-world scenarios. In this phase, it’s important to develop an understanding for the types of inputs the app is performing well or poorly on and how exactly it’s breaking down in those cases. Both feedback collection and run annotation are critical for this workflow. This will help in curation of test cases that can help track regressions/improvements and development of automatic evaluations.Capturing Feedback\u200bWhen launching your application to an initial set of users, it’s important to gather human feedback on the responses it’s producing. This helps draw attention to the most interesting runs and highlight edge cases that are causing problematic responses. LangSmith allows you to attach feedback scores to logged traces (oftentimes, this is hooked up to a feedback button in your app), then filter on traces that have a specific feedback tag and score. A common workflow is to filter on traces that receive a poor user feedback score, then drill down into problematic points using the detailed trace view.Annotating Traces\u200bLangSmith also supports sending runs to annotation queues, which allow annotators to closely inspect interesting traces and annotate them with respect to different criteria. Annotators can be PMs, engineers, or even subject matter experts. This allows users to catch regressions across important evaluation criteria.Adding Runs to a Dataset\u200bAs your application progresses through the beta testing phase, it's essential to continue collecting data to refine and improve its performance. LangSmith enables you to add runs as examples to datasets (from both the project page and within an annotation queue), expanding your test coverage on real-world scenarios. This is a key benefit in having your logging system and your evaluation/testing system in the same platform.Production\u200bClosely inspecting key data points, growing benchmarking datasets, annotating traces, and drilling down into important data in trace view are workflows you’ll also want to do once your app hits production.However, especially at the production stage, it’s crucial to get a high-level overview of application performance with respect to latency, cost, and feedback scores. This ensures that it's delivering desirable results at scale.Online evaluations and automations allow you to process and score production traces in near real-time.Additionally, threads provide a seamless way to group traces from a single conversation, making it easier to track the performance of your application across multiple turns.Monitoring and A/B Testing\u200bLangSmith provides monitoring charts that allow you to track key metrics over time. You can expand to view metrics for a given period and drill down into a specific data point to get a trace table for that time period — this is especially handy for debugging production issues.LangSmith also allows for tag and metadata grouping, which allows users to mark different versions of their applications with different identifiers and view how they are performing side-by-side within each chart. This is helpful for A/B testing changes in prompt, model, or retrieval strategy.Automations\u200bAutomations are a powerful feature in LangSmith that allow you to perform actions on traces in near real-time. This can be used to automatically score traces, send them to annotation queues, or send them to datasets.To define an automation, simply provide a filter condition, a sampling rate, and an action to perform. Automations are particularly helpful for processing traces at production scale.Threads\u200bMany LLM applications are multi-turn, meaning that they involve a series of interactions between the user and the application. LangSmith provides a threads view that groups traces from a single conversation together, making it easier to", metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'})]
-
-
 
 #### API Reference
 
@@ -536,7 +484,6 @@ retriever_chain.invoke({
 You should see that this returns documents about testing in LangSmith. This is because the LLM generated a new query, combining the chat history with the follow-up question.
 
 Now that we have this new retriever, we can create a new chain to continue the conversation with these retrieved documents in mind.
-
 
 ```python
 prompt = ChatPromptTemplate.from_messages([
@@ -551,7 +498,6 @@ retrieval_chain = create_retrieval_chain(retriever_chain, document_chain)
 
 We can now test this out end-to-end:
 
-
 ```python
 chat_history = [HumanMessage(content="Can LangSmith help test my LLM applications?"), AIMessage(content="Yes!")]
 retrieval_chain.invoke({
@@ -559,9 +505,6 @@ retrieval_chain.invoke({
     "input": "Tell me how"
 })
 ```
-
-
-
 
     {'chat_history': [HumanMessage(content='Can LangSmith help test my LLM applications?'),
       AIMessage(content='Yes!')],
@@ -571,8 +514,6 @@ retrieval_chain.invoke({
       Document(page_content="Every playground run is logged in the system and can be used to create test cases or compare with other runs.Beta Testing\u200bBeta testing allows developers to collect more data on how their LLM applications are performing in real-world scenarios. In this phase, it’s important to develop an understanding for the types of inputs the app is performing well or poorly on and how exactly it’s breaking down in those cases. Both feedback collection and run annotation are critical for this workflow. This will help in curation of test cases that can help track regressions/improvements and development of automatic evaluations.Capturing Feedback\u200bWhen launching your application to an initial set of users, it’s important to gather human feedback on the responses it’s producing. This helps draw attention to the most interesting runs and highlight edge cases that are causing problematic responses. LangSmith allows you to attach feedback scores to logged traces (oftentimes, this is hooked up to a feedback button in your app), then filter on traces that have a specific feedback tag and score. A common workflow is to filter on traces that receive a poor user feedback score, then drill down into problematic points using the detailed trace view.Annotating Traces\u200bLangSmith also supports sending runs to annotation queues, which allow annotators to closely inspect interesting traces and annotate them with respect to different criteria. Annotators can be PMs, engineers, or even subject matter experts. This allows users to catch regressions across important evaluation criteria.Adding Runs to a Dataset\u200bAs your application progresses through the beta testing phase, it's essential to continue collecting data to refine and improve its performance. LangSmith enables you to add runs as examples to datasets (from both the project page and within an annotation queue), expanding your test coverage on real-world scenarios. This is a key benefit in having your logging system and your evaluation/testing system in the same platform.Production\u200bClosely inspecting key data points, growing benchmarking datasets, annotating traces, and drilling down into important data in trace view are workflows you’ll also want to do once your app hits production.However, especially at the production stage, it’s crucial to get a high-level overview of application performance with respect to latency, cost, and feedback scores. This ensures that it's delivering desirable results at scale.Online evaluations and automations allow you to process and score production traces in near real-time.Additionally, threads provide a seamless way to group traces from a single conversation, making it easier to track the performance of your application across multiple turns.Monitoring and A/B Testing\u200bLangSmith provides monitoring charts that allow you to track key metrics over time. You can expand to view metrics for a given period and drill down into a specific data point to get a trace table for that time period — this is especially handy for debugging production issues.LangSmith also allows for tag and metadata grouping, which allows users to mark different versions of their applications with different identifiers and view how they are performing side-by-side within each chart. This is helpful for A/B testing changes in prompt, model, or retrieval strategy.Automations\u200bAutomations are a powerful feature in LangSmith that allow you to perform actions on traces in near real-time. This can be used to automatically score traces, send them to annotation queues, or send them to datasets.To define an automation, simply provide a filter condition, a sampling rate, and an action to perform. Automations are particularly helpful for processing traces at production scale.Threads\u200bMany LLM applications are multi-turn, meaning that they involve a series of interactions between the user and the application. LangSmith provides a threads view that groups traces from a single conversation together, making it easier to", metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'}),
       Document(page_content='meaning that they involve a series of interactions between the user and the application. LangSmith provides a threads view that groups traces from a single conversation together, making it easier to track the performance of and annotate your application across multiple turns.Was this page helpful?You can leave detailed feedback on GitHub.PreviousQuick StartNextOverviewPrototypingBeta TestingProductionCommunityDiscordTwitterGitHubDocs CodeLangSmith SDKPythonJS/TSMoreHomepageBlogLangChain Python DocsLangChain JS/TS DocsCopyright © 2024 LangChain, Inc.', metadata={'source': 'https://docs.smith.langchain.com/user_guide', 'title': 'LangSmith User Guide | 🦜️🛠️ LangSmith', 'description': 'LangSmith is a platform for LLM application development, monitoring, and testing. In this guide, we’ll highlight the breadth of workflows LangSmith supports and how they fit into each stage of the application development lifecycle. We hope this will inform users how to best utilize this powerful platform or give them something to consider if they’re just starting their journey.', 'language': 'en'})],
      'answer': "LangSmith can help you test your LLM applications by providing features such as the ability to create datasets for running tests, uploading test cases in bulk, exporting test cases from application traces, running custom evaluations, and comparing different versions of your applications to track performance. Additionally, LangSmith offers a playground environment for rapid iteration and experimentation, beta testing capabilities for collecting real-world performance data, capturing feedback from users, annotating traces for evaluation, and adding runs to datasets to refine and improve your application's performance. In the production stage, LangSmith allows for monitoring key metrics, A/B testing changes, and setting up automations to process traces in real-time."}
-
-
 
 We can see that this gives a coherent answer - we've successfully turned our retrieval chain into a chatbot!
 
@@ -588,7 +529,6 @@ One of the first things to do when building an agent is to decide what tools it 
 2. A search tool. This will let it easily answer questions that require up-to-date information.
 
 First, let's set up a tool for the retriever we just created:
-
 
 ```python
 from langchain.tools.retriever import create_retriever_tool
@@ -612,7 +552,6 @@ export TAVILY_API_KEY=...
 
 If you do not want to set up an API key, you can skip creating this tool.
 
-
 ```python
 from langchain_community.tools.tavily_search import TavilySearchResults
 
@@ -625,7 +564,6 @@ search = TavilySearchResults()
 
 We can now create a list of the tools we want to work with:
 
-
 ```python
 tools = [retriever_tool, search]
 ```
@@ -634,32 +572,25 @@ Now that we have the tools, we can create an agent to use them. We will go over 
 
 Install `langchainhub` first:
 
-
 ```python
 pip install --quiet langchainhub
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
 
-
 Install the `langchain-openai` package to interact with OpenAI:
-
 
 ```python
 pip install --quiet langchain-openai
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
 
-
 Now we can use it to get a predefined prompt:
-
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -684,13 +615,10 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 We can now invoke the agent and see how it responds! We can ask it questions about LangSmith:
 
-
 ```python
 agent_executor.invoke({"input": "how can langsmith help with testing?"})
 ```
 
-    
-    
     [1m> Entering new AgentExecutor chain...[0m
     [32;1m[1;3m
     Invoking: `langsmith_search` with `{'query': 'how can LangSmith help with testing'}`
@@ -748,17 +676,12 @@ agent_executor.invoke({"input": "how can langsmith help with testing?"})
     {'input': 'how can langsmith help with testing?',
      'output': "LangSmith can help with testing in various ways throughout the application development lifecycle:\n\n1. **Prototyping**: LangSmith supports prototyping LLM applications by allowing quick experimentation between prompts, model types, retrieval strategies, and other parameters.\n\n2. **Debugging**: LangSmith provides tracing capabilities that enable developers to debug issues in LLM applications by offering clear visibility and debugging information at each step of the sequence.\n\n3. **Initial Test Set**: Developers can create datasets of inputs and reference outputs to run tests on LLM applications. LangSmith makes it easy to run custom evaluations to score test results.\n\n4. **Comparison View**: LangSmith offers a comparison view for test runs, allowing developers to track and diagnose regressions in test scores across multiple revisions of the application.\n\n5. **Playground**: LangSmith provides a playground environment for rapid iteration and experimentation with different prompts and models.\n\n6. **Beta Testing**: Developers can use LangSmith for beta testing to collect data on how LLM applications perform in real-world scenarios and gather feedback for improvements.\n\n7. **Capturing Feedback**: LangSmith allows developers to gather human feedback on the responses produced by the application and attach feedback scores to logged traces.\n\n8. **Annotating Traces**: LangSmith supports sending runs to annotation queues for annotators to inspect and annotate interesting traces with different criteria.\n\n9. **Adding Runs to a Dataset**: Developers can add runs as examples to datasets to expand test coverage on real-world scenarios and refine the application's performance.\n\n10. **Production**: In the production stage, LangSmith helps in closely inspecting key data points, monitoring application performance metrics, and processing production traces in near real-time.\n\n11. **Monitoring and A/B Testing**: LangSmith provides monitoring charts to track key metrics over time and allows for A/B testing changes in prompt, model, or retrieval strategy.\n\n12. **Automations**: Automations in LangSmith enable developers to perform actions on traces in near real-time, such as scoring traces, sending them to annotation queues, or datasets.\n\n13. **Threads**: LangSmith provides a threads view to group traces from a single conversation together, making it easier to track the performance of the application across multiple turns.\n\nThese features in LangSmith can significantly aid in testing and improving the performance of LLM applications during development and production stages."}
 
-
-
 We can ask it about the weather:
-
 
 ```python
 agent_executor.invoke({"input": "what is the weather in SF?"})
 ```
 
-    
-    
     [1m> Entering new AgentExecutor chain...[0m
     [32;1m[1;3m
     Invoking: `tavily_search_results_json` with `{'query': 'weather in San Francisco'}`
@@ -775,10 +698,7 @@ agent_executor.invoke({"input": "what is the weather in SF?"})
     {'input': 'what is the weather in SF?',
      'output': 'You can check the current and future weather conditions for San Francisco, CA on [AccuWeather](https://www.accuweather.com/en/us/san-francisco/94103/weather-forecast/347629). This includes information on temperature, precipitation, wind, air quality, and more.'}
 
-
-
 We can have conversations with it:
-
 
 ```python
 chat_history = [HumanMessage(content="Can LangSmith help test my LLM applications?"), AIMessage(content="Yes!")]
@@ -788,8 +708,6 @@ agent_executor.invoke({
 })
 ```
 
-    
-    
     [1m> Entering new AgentExecutor chain...[0m
     [32;1m[1;3m
     Invoking: `langsmith_search` with `{'query': 'LangSmith LLM application testing services'}`
@@ -836,8 +754,6 @@ agent_executor.invoke({
      'input': 'Tell me how',
      'output': 'LangSmith is a platform for LLM application development, monitoring, and testing. It supports various workflows that can help you test your LLM applications effectively. Here are some key features and workflows supported by LangSmith:\n\n1. Prototyping: Allows quick experimentation between prompts, model types, retrieval strategy, and other parameters.\n2. Debugging: Provides clear visibility and debugging information at each step of an LLM sequence to identify and root-cause issues.\n3. Initial Test Set: Enables developers to create datasets of inputs and reference outputs to run tests on LLM applications.\n4. Comparison View: Helps track and diagnose regressions in test scores across multiple revisions of your application.\n5. Playground: Provides a rapid iteration and experimentation environment to test different prompts and models.\n6. Beta Testing: Collects data on how LLM applications perform in real-world scenarios and helps in refining the application.\n7. Capturing Feedback: Allows gathering human feedback on the responses produced by the application.\n8. Annotating Traces: Supports sending runs to annotation queues for close inspection and annotation.\n9. Production Monitoring: Provides a high-level overview of application performance with respect to latency, cost, and feedback scores.\n10. Monitoring and A/B Testing: Allows tracking key metrics over time and A/B testing changes in prompt, model, or retrieval strategy.\n11. Automations: Enables performing actions on traces in near real-time, such as scoring traces, sending them to annotation queues, or datasets.\n12. Threads: Groups traces from a single conversation together to track the performance of the application across multiple turns.\n\nThese features and workflows in LangSmith can assist you in testing your LLM applications effectively.'}
 
-
-
 ### Diving Deeper
 
 We've now successfully set up a basic agent. We only touched on the basics of agents - for a deeper dive into everything mentioned here, see [this section of documentation](https://python.langchain.com/v0.1/docs/modules/agents/).
@@ -850,16 +766,13 @@ While the first part of this guide was intended to be run in a Jupyter Notebook,
 
 Install with:
 
-
 ```python
 pip install --quiet "langserve[all]"
 ```
 
-    
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m24.1[0m
     [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
     Note: you may need to restart the kernel to use updated packages.
-
 
 ### Server
 
@@ -957,9 +870,7 @@ if __name__ == "__main__":
 - [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html)
 - [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html)
 - [create_retriever_tool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.create_retriever_tool.html)
-- [TavilySearchResults](<https://api.python.langchain.com/en/latest/tools/langchain_community.tools.t>
-
-avily_search.tool.TavilySearchResults.html)
+- [TavilySearchResults](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.tavily_search.tool.TavilySearchResults.html)
 
 - [create_openai_functions_agent](https://api.python.langchain.com/en/latest/agents/langchain.agents.openai_functions_agent.base.create_openai_functions_agent.html)
 - [AgentExecutor](https://api.python.langchain.com/en/latest/agents/langchain.agents.agent.AgentExecutor.html)
