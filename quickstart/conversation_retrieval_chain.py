@@ -2,14 +2,14 @@ import os
 
 import openai
 from dotenv import load_dotenv
-from langchain.chains import create_retrieval_chain
+from langchain.chains import create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.prompts import MessagesPlaceholder
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -38,18 +38,25 @@ vector = FAISS.from_documents(documents, embeddings)
 retriever = vector.as_retriever()
 
 # Define the prompt template for the language model to generate the search query
-prompt = ChatPromptTemplate.from_messages([
-    MessagesPlaceholder(variable_name="chat_history"),
-    ("user", "{input}"),
-    ("user", "Given the above conversation, generate a search query to look up to get information relevant to the conversation")
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user", "{input}"),
+        (
+            "user",
+            "Given the above conversation, generate a search query to look up to get information relevant to the conversation",
+        ),
+    ]
+)
 
 # Create a document chain that will take the documents and the prompt to generate answers
 document_chain = create_stuff_documents_chain(llm, prompt)
 
 # Create a retrieval chain that combines the retriever and the document chain
-retrieval_chain = create_retrieval_chain(retriever, document_chain)
+retriever_chain = create_history_aware_retriever(llm, retriever, prompt)
 
-# Invoke the retrieval chain with a specific question and print the response
-response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"})
-print(response["answer"])
+chat_history = [
+    HumanMessage(content="Can LangSmith help test my LLM applications?"),
+    AIMessage(content="Yes!"),
+]
+retriever_chain.invoke({"chat_history": chat_history, "input": "Tell me how"})
