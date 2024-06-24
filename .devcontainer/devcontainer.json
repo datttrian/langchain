@@ -1,0 +1,29 @@
+{
+    "name": "Python 3",
+    "image": "mcr.microsoft.com/devcontainers/python:1-3.10-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/warrenbuckley/codespace-features/sqlite:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vsls-contrib.gitdoc",
+                "ms-toolsai.jupyter",
+                "TianyiShi.rmarkdown",
+                "ms-python.pylint",
+                "ms-python.python",
+                "ms-python.flake8",
+                "ms-python.vscode-pylance",
+                "ms-python.mypy-type-checker",
+                "ms-python.black-formatter",
+                "qwtel.sqlite-viewer",
+                "streetsidesoftware.code-spell-checker",
+                "DavidAnson.vscode-markdownlint",
+                "EditorConfig.EditorConfig",
+                "VisualStudioExptTeam.intellicode-api-usage-examples",
+                "VisualStudioExptTeam.vscodeintellicode"
+            ]
+        }
+    }
+}
