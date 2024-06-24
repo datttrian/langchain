@@ -7,7 +7,5 @@
 1. Chatbots
 1. Tool use and agents
 1. Query analysis
-1. [Q&A over SQL + CSV](sql)
-
-1. [Chain](sql/chain.py)
-1. [Agent](sql/agent.py)
+1. [Q&A over SQL + CSV](sql): [Chain](sql/chain.py), [Agent](sql/agent.py)
+1. More
