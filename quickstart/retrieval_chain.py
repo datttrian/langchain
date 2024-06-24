@@ -1,5 +1,4 @@
 import os
-
 import openai
 from dotenv import load_dotenv
 from langchain.chains import create_retrieval_chain
@@ -15,18 +14,14 @@ load_dotenv()
 llm = ChatOpenAI()
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
-
 loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide")
 docs = loader.load()
 
-
 embeddings = OpenAIEmbeddings()
-
 
 text_splitter = RecursiveCharacterTextSplitter()
 documents = text_splitter.split_documents(docs)
 vector = FAISS.from_documents(documents, embeddings)
-
 
 prompt = ChatPromptTemplate.from_template(
     """Answer the following question based only on the provided context:
@@ -40,8 +35,8 @@ Question: {input}"""
 
 document_chain = create_stuff_documents_chain(llm, prompt)
 
-
-document_chain.invoke(
+# Invoke the chain and print the result
+result = document_chain.invoke(
     {
         "input": "how can langsmith help with testing?",
         "context": [
@@ -49,6 +44,8 @@ document_chain.invoke(
         ],
     }
 )
+
+print(result)
 
 
 retriever = vector.as_retriever()
