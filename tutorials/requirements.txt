@@ -4,3 +4,5 @@ langchain-community
 langchain-core
 langchain-chroma
 langchain-openai
+langchain_anthropic
+langgraph
