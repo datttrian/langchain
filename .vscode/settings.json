@@ -8,6 +8,9 @@
     ],
     "files.insertFinalNewline": true,
     "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter"
-        }
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "mypy-type-checker.args": [
+        "var-annotated"
+    ]
 }
