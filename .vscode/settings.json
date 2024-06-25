@@ -10,6 +10,9 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    "pylint.args": [
+        "E1120"
+    ],
     "mypy-type-checker.args": [
         "var-annotated"
     ]
