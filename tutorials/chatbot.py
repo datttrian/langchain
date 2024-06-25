@@ -76,6 +76,22 @@ messages = [
     AIMessage(content="yes!"),
 ]
 
+response = chain.invoke(
+    {
+        "messages": messages + [HumanMessage(content="what's my name?")],
+        "language": "English",
+    }
+)
+print(response.content)
+
+response = chain.invoke(
+    {
+        "messages": messages + [HumanMessage(content="what math problem did i ask")],
+        "language": "English",
+    }
+)
+print(response.content)
+
 # Invocation with streaming response
 for r in with_message_history.stream(
     {
