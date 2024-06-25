@@ -2,7 +2,7 @@
 
 ## Tutorials
 
-1. Build a Simple LLM Application with LCEL: serve
+1. [Build a Simple LLM Application with LCEL](tutorials/llm_chain.ipynb): [serve.py](tutorials/serve.py)
 
 ## LangChain v0.1
 
