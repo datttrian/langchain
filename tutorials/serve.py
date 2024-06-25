@@ -20,16 +20,14 @@ parser = StrOutputParser()
 # 4. Create chain
 chain = prompt_template | model | parser
 
-
-# 4. App definition
+# 5. App definition
 app = FastAPI(
     title="LangChain Server",
     version="1.0",
     description="A simple API server using LangChain's Runnable interfaces",
 )
 
-# 5. Adding chain route
-
+# 6. Adding chain route
 add_routes(
     app,
     chain,
