@@ -13,3 +13,4 @@
 
 1. [Build a Retrieval Augmented Generation (RAG) App](src/rag.py)
 1. [Build a Conversational RAG Application](src/qa_chat_history.py)
+1. Build a Question/Answering system over SQL data
