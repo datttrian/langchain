@@ -11,4 +11,4 @@
 
 ### Working with external knowledge
 
-1. Build a Retrieval Augmented Generation (RAG) App
+1. [Build a Retrieval Augmented Generation (RAG) App](src/rag.py)
