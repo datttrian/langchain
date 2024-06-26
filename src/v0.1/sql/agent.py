@@ -1,9 +1,10 @@
 import os
+
 import openai
 from dotenv import load_dotenv
+from langchain_community.agent_toolkits import create_sql_agent
 from langchain_community.utilities import SQLDatabase
 from langchain_openai import ChatOpenAI
-from langchain_community.agent_toolkits import create_sql_agent
 
 # Load environment variables from .env file
 load_dotenv()

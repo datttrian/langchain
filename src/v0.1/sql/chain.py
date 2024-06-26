@@ -3,14 +3,13 @@ from operator import itemgetter
 
 import openai
 from dotenv import load_dotenv
+from langchain.chains import create_sql_query_chain
 from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
-
-from langchain.chains import create_sql_query_chain
 
 # Load environment variables from .env file
 load_dotenv()
