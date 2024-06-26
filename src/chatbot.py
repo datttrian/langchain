@@ -57,6 +57,7 @@ messages = [
     AIMessage(content="no problem!"),
     HumanMessage(content="having fun?"),
     AIMessage(content="yes!"),
+    HumanMessage(content="hi! I'm bob"),
 ]
 
 
@@ -73,24 +74,12 @@ with_message_history = RunnableWithMessageHistory(
     input_messages_key="messages",
 )
 
-config = {"configurable": {"session_id": "abc20"}}
-
-response = with_message_history.invoke(
+config = {"configurable": {"session_id": "abc16"}}
+for r in with_message_history.stream(
     {
-        "messages": messages + [HumanMessage(content="whats my name?")],
+        "messages": [HumanMessage(content="whats my name?")],
         "language": "English",
     },
     config=config,
-)
-
-print(response.content)
-
-response = with_message_history.invoke(
-    {
-        "messages": [HumanMessage(content="what math problem did i ask?")],
-        "language": "English",
-    },
-    config=config,
-)
-
-print(response.content)
+):
+    print(r.content, end="|")
