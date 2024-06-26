@@ -7,7 +7,7 @@
 1. [Build a Simple LLM Application with LCEL](tutorials/llm_chain.ipynb): [serve.py](tutorials/serve.py)
 1. [Build a Chatbot](tutorials/chatbot.ipynb): [chatbot.py](tutorials/chatbot.py)
 1. [Build vector stores and retrievers](tutorials/retrievers.ipynb): [retrievers.py](tutorials/retrievers.py)
-1. Build an Agent
+1. [Build an Agent](src/agents.ipynb): [agents.py](src/agents.py)
 
 ### Working with external knowledge
 
