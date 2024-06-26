@@ -11,5 +11,5 @@
 
 ## LangChain v0.1
 
-1. [Quickstart](quickstart): [LLM Chain](quickstart/llm_chain.py), [Retrieval Chain](quickstart/retrieval_chain.py), [Conversation Retrieval Chain](quickstart/conversation_retrieval_chain.py), [Agent](quickstart/agent.py), [Serving with LangServe](quickstart/serve.py)
-1. [Q&A over SQL + CSV](sql): [Chain](sql/chain.py), [Agent](sql/agent.py)
+1. [Quickstart](src/v0.1/quickstart): [LLM Chain](src/v0.1/quickstart/llm_chain.py), [Retrieval Chain](src/v0.1/quickstart/retrieval_chain.py), [Conversation Retrieval Chain](src/v0.1/quickstart/conversation_retrieval_chain.py), [Agent](src/v0.1/quickstart/agent.py), [Serving with LangServe](src/v0.1/quickstart/serve.py)
+1. [Q&A over SQL + CSV](src/v0.1/sql): [Chain](src/v0.1/sql/chain.py), [Agent](src/v0.1/sql/agent.py)
