@@ -4,7 +4,7 @@
 
 ### Basics
 
-1. Build a Simple LLM Application with LCEL
+1. [Build a Simple LLM Application with LCEL](src/llm_chain.ipynb): [serve.py](src/serve.py)
 1. Build a Chatbot
 1. Build vector stores and retrievers
 1. [Build an Agent](src/agents.ipynb): [agents.py](src/agents.py)
