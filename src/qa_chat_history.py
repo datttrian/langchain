@@ -1,16 +1,19 @@
 import bs4
+from dotenv import load_dotenv
 from langchain.tools.retriever import create_retriever_tool
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import HumanMessage
+
+load_dotenv()
 
 memory = SqliteSaver.from_conn_string(":memory:")
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 # Construct retriever
 loader = WebBaseLoader(
