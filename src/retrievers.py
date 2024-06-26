@@ -2,8 +2,10 @@ from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
+load_dotenv()
 
 documents = [
     Document(
@@ -28,37 +30,17 @@ documents = [
     ),
 ]
 
-
 vectorstore = Chroma.from_documents(
     documents,
     embedding=OpenAIEmbeddings(),
 )
-vectorstore.similarity_search("cat")
-
-vectorstore.similarity_search_with_score("cat")
-
-embedding = OpenAIEmbeddings().embed_query("cat")
-
-vectorstore.similarity_search_by_vector(embedding)
-
-
-retriever = RunnableLambda(vectorstore.similarity_search).bind(k=1)  # select top result
-
-retriever.batch(["cat", "shark"])
 
 retriever = vectorstore.as_retriever(
     search_type="similarity",
     search_kwargs={"k": 1},
 )
 
-retriever.batch(["cat", "shark"])
-
-
-load_dotenv()
-
-
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
-
 
 message = """
 Answer this question using the provided context only.
