@@ -51,6 +51,15 @@ if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
 ```
 
+```python
+from langserve import RemoteRunnable
+
+remote_chain = RemoteRunnable("http://localhost:8000/chain/")
+remote_chain.invoke({"language": "italian", "text": "hi"})
+```
+
+    'Ciao'
+
 ### Build a Chatbot
 
 ```python
