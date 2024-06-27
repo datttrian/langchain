@@ -11,29 +11,46 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+# Load environment variables from a .env file
 load_dotenv()
 
+# Initialize the OpenAI model with the specified version and temperature
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
-
 # Construct retriever
+
+# Define a web base loader to load the contents of the specified blog URL
 loader = WebBaseLoader(
     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
     bs_kwargs=dict(
         parse_only=bs4.SoupStrainer(
-            class_=("post-content", "post-title", "post-header")
+            class_=(
+                "post-content",
+                "post-title",
+                "post-header",
+            )  # Specify the classes to parse
         )
     ),
 )
+
+# Load the documents from the web page
 docs = loader.load()
 
+# Define a text splitter to chunk the documents into smaller pieces
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+
+# Split the loaded documents into chunks
 splits = text_splitter.split_documents(docs)
+
+# Create a Chroma vector store from the document chunks, using OpenAI embeddings
 vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+
+# Create a retriever from the vector store for similarity-based search
 retriever = vectorstore.as_retriever()
 
-
 # Contextualize question
+
+# Define a system prompt for contextualizing the question
 contextualize_q_system_prompt = (
     "Given a chat history and the latest user question "
     "which might reference context in the chat history, "
@@ -41,6 +58,8 @@ contextualize_q_system_prompt = (
     "without the chat history. Do NOT answer the question, "
     "just reformulate it if needed and otherwise return it as is."
 )
+
+# Create a chat prompt template for contextualizing the question
 contextualize_q_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", contextualize_q_system_prompt),
@@ -48,12 +67,15 @@ contextualize_q_prompt = ChatPromptTemplate.from_messages(
         ("human", "{input}"),
     ]
 )
+
+# Create a history-aware retriever using the LLM and the contextualize question prompt
 history_aware_retriever = create_history_aware_retriever(
     llm, retriever, contextualize_q_prompt
 )
 
-
 # Answer question
+
+# Define a system prompt for answering the question
 system_prompt = (
     "You are an assistant for question-answering tasks. "
     "Use the following pieces of retrieved context to answer "
@@ -63,6 +85,8 @@ system_prompt = (
     "\n\n"
     "{context}"
 )
+
+# Create a chat prompt template for answering the question
 qa_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
@@ -70,21 +94,27 @@ qa_prompt = ChatPromptTemplate.from_messages(
         ("human", "{input}"),
     ]
 )
+
+# Create a chain to combine retrieved documents and the question-answering task
 question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
+# Create a retrieval-augmented generation (RAG) chain
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
-
 # Statefully manage chat history
+
+# Initialize a dictionary to store session histories
 store = {}
 
 
+# Function to retrieve or create a session history
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = ChatMessageHistory()
     return store[session_id]
 
 
+# Create a runnable with message history for the RAG chain
 conversational_rag_chain = RunnableWithMessageHistory(
     rag_chain,
     get_session_history,
@@ -93,16 +123,17 @@ conversational_rag_chain = RunnableWithMessageHistory(
     output_messages_key="answer",
 )
 
-
+# Invoke the conversational RAG chain with the first query
 print(
     conversational_rag_chain.invoke(
         {"input": "What is Task Decomposition?"},
         config={
             "configurable": {"session_id": "abc123"}
-        },  # constructs a key "abc123" in `store`.
+        },  # Constructs a key "abc123" in `store`.
     )["answer"]
 )
 
+# Invoke the conversational RAG chain with the second query
 print(
     conversational_rag_chain.invoke(
         {"input": "What are common ways of doing it?"},
