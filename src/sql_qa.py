@@ -31,7 +31,6 @@ def query_as_list(db, query):
 artists = query_as_list(db, "SELECT Name FROM Artist")
 albums = query_as_list(db, "SELECT Title FROM Album")
 
-
 vector_db = FAISS.from_texts(artists + albums, OpenAIEmbeddings())
 retriever = vector_db.as_retriever(search_kwargs={"k": 5})
 description = """Use to look up values to filter on. Input is an approximate spelling of the proper noun, output is \
