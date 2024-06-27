@@ -472,6 +472,185 @@ for s in agent_executor.stream(
     {'agent': {'messages': [AIMessage(content='Common ways of task decomposition, as mentioned in the blog post, include:\n\n1. Using Language Models (LLM) with Simple Prompting: Language models can be utilized with simple prompts like "Steps for XYZ" or "What are the subgoals for achieving XYZ" to break down tasks into smaller components.\n\n2. Task-Specific Instructions: Task decomposition can also be achieved by providing task-specific instructions. For example, using instructions like "Write a story outline" for tasks such as writing a novel.\n\n3. Human Inputs: Another method of task decomposition involves human inputs, where individuals provide input to break down complex tasks into manageable steps.\n\nThese approaches help in breaking down complex tasks into smaller and simpler steps, enabling autonomous agents to plan and execute tasks more effectively.', response_metadata={'token_usage': {'completion_tokens': 154, 'prompt_tokens': 1313, 'total_tokens': 1467}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-da3a7949-df80-4df5-ac1f-4787693f76c6-0', usage_metadata={'input_tokens': 1313, 'output_tokens': 154, 'total_tokens': 1467})]}}
     ----
 
+### Build a Question/Answering system over SQL data
+
+#### Chains
+
+```python
+from operator import itemgetter
+
+from dotenv import load_dotenv
+from langchain.chains import create_sql_query_chain
+from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
+from langchain_community.utilities import SQLDatabase
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model with the specified version
+llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
+
+# Create a connection to the SQL database
+db = SQLDatabase.from_uri("sqlite:///Chinook.db")
+
+# Create an initial SQL query chain with the LLM and the database
+chain = create_sql_query_chain(llm, db)
+
+# Create a tool to execute SQL queries on the database
+execute_query = QuerySQLDataBaseTool(db=db)
+
+# Create another SQL query chain for writing queries
+write_query = create_sql_query_chain(llm, db)
+
+# Combine the write query chain and the execute query tool into a single chain
+chain = write_query | execute_query
+
+# Define a prompt template to generate an answer based on the user question, SQL query, and SQL result
+answer_prompt = PromptTemplate.from_template(
+    """Given the following user question, corresponding SQL query, and SQL result, answer the user question.
+
+Question: {question}
+SQL Query: {query}
+SQL Result: {result}
+Answer: """
+)
+
+# Combine the query writing, execution, and answering into a single chain
+chain = (
+    RunnablePassthrough.assign(
+        query=write_query
+    ).assign(  # Assign the query writing chain
+        result=itemgetter("query") | execute_query
+    )  # Assign the result execution chain
+    | answer_prompt  # Use the answer prompt to format the response
+    | llm  # Use the LLM to generate the final answer
+    | StrOutputParser()  # Parse the output as a string
+)
+
+# Invoke the chain with a user question
+answer = chain.invoke({"question": "How many employees are there"})
+
+# Print the answer
+print(answer)
+```
+
+    There are a total of 8 employees.
+
+#### Agents
+
+```python
+import ast
+import re
+
+from dotenv import load_dotenv
+from langchain.agents.agent_toolkits import create_retriever_tool
+from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from langchain_community.utilities import SQLDatabase
+from langchain_community.vectorstores import FAISS
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langgraph.prebuilt import create_react_agent
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model with the specified version
+llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
+
+# Create a connection to the SQL database
+db = SQLDatabase.from_uri("sqlite:///Chinook.db")
+
+# Create tools from a toolkit for interacting with the SQL database using the LLM
+toolkit = SQLDatabaseToolkit(db=db, llm=llm)
+tools = toolkit.get_tools()
+
+
+# Define a function to run a query on the database and process the results
+def query_as_list(db, query):
+    # Run the query on the database
+    res = db.run(query)
+    # Parse the result into a list of values
+    res = [el for sub in ast.literal_eval(res) for el in sub if el]
+    # Remove numeric values and strip whitespace
+    res = [re.sub(r"\b\d+\b", "", string).strip() for string in res]
+    # Return unique values as a list
+    return list(set(res))
+
+
+# Query the list of artist names and album titles from the database
+artists = query_as_list(db, "SELECT Name FROM Artist")
+albums = query_as_list(db, "SELECT Title FROM Album")
+
+# Create a FAISS vector store from the combined list of artists and albums, using OpenAI embeddings
+vector_db = FAISS.from_texts(artists + albums, OpenAIEmbeddings())
+
+# Create a retriever from the vector store for similarity-based search
+retriever = vector_db.as_retriever(search_kwargs={"k": 5})
+
+# Define a description for the retriever tool
+description = """Use to look up values to filter on. Input is an approximate spelling of the proper noun, output is \
+valid proper nouns. Use the noun most similar to the search."""
+
+# Create a retriever tool with the defined retriever and description
+retriever_tool = create_retriever_tool(
+    retriever,
+    name="search_proper_nouns",
+    description=description,
+)
+
+# Define a system message with instructions for the agent
+system = """You are an agent designed to interact with a SQL database.
+Given an input question, create a syntactically correct SQLite query to run, then look at the results of the query and return the answer.
+Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
+You can order the results by a relevant column to return the most interesting examples in the database.
+Never query for all the columns from a specific table, only ask for the relevant columns given the question.
+You have access to tools for interacting with the database.
+Only use the given tools. Only use the information returned by the tools to construct your final answer.
+You MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.
+
+DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
+
+You have access to the following tables: {table_names}
+
+If you need to filter on a proper noun, you must ALWAYS first look up the filter value using the "search_proper_nouns" tool!
+Do not try to guess at the proper name - use this function to find similar ones.""".format(
+    table_names=db.get_usable_table_names()
+)
+
+# Create a system message with the defined instructions
+system_message = SystemMessage(content=system)
+
+# Append the retriever tool to the list of tools
+tools.append(retriever_tool)
+
+# Create an agent with the LLM, tools, and system message
+agent = create_react_agent(llm, tools, messages_modifier=system_message)
+
+# Define the first query
+query = "How many albums does alis in chain have?"
+
+# Stream responses for the first query using the agent
+for s in agent.stream({"messages": [HumanMessage(content=query)]}):
+    # Print each response and a separator
+    print(s)
+    print("----")
+```
+
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_QlXRSyobLzujJsu5oMu1fFHr', 'function': {'arguments': '{"query":"alis in chain"}', 'name': 'search_proper_nouns'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 674, 'total_tokens': 693}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-85437a2e-bda2-480e-9901-074b172bbeac-0', tool_calls=[{'name': 'search_proper_nouns', 'args': {'query': 'alis in chain'}, 'id': 'call_QlXRSyobLzujJsu5oMu1fFHr'}], usage_metadata={'input_tokens': 674, 'output_tokens': 19, 'total_tokens': 693})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='Alice In Chains\n\nAisha Duo\n\nXis\n\nDa Lama Ao Caos\n\nA-Sides', name='search_proper_nouns', tool_call_id='call_QlXRSyobLzujJsu5oMu1fFHr')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_bSApsWZMwxyysqEz2FHwoavg', 'function': {'arguments': '{"query":"SELECT COUNT(Album.AlbumId) AS TotalAlbums FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = \'Alice In Chains\'"}', 'name': 'sql_db_query'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 49, 'prompt_tokens': 724, 'total_tokens': 773}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-e9e74020-eb99-4cea-988a-ad8cd4ab3878-0', tool_calls=[{'name': 'sql_db_query', 'args': {'query': "SELECT COUNT(Album.AlbumId) AS TotalAlbums FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'Alice In Chains'"}, 'id': 'call_bSApsWZMwxyysqEz2FHwoavg'}], usage_metadata={'input_tokens': 724, 'output_tokens': 49, 'total_tokens': 773})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='[(1,)]', name='sql_db_query', tool_call_id='call_bSApsWZMwxyysqEz2FHwoavg')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='Alice In Chains has 1 album.', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 786, 'total_tokens': 795}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-8a3fa8ca-001c-49a8-880c-9ab2fa4756df-0', usage_metadata={'input_tokens': 786, 'output_tokens': 9, 'total_tokens': 795})]}}
+    ----
+
 ```python
 
 ```
