@@ -9,6 +9,7 @@ langchain-openai==0.1.10
 langchainhub==0.1.20
 langgraph==0.1.1
 langserve==0.2.2
+llama_cpp_python==0.2.79
 python-dotenv==1.0.1
 pytube==15.0.0
 sse-starlette==2.1.2
