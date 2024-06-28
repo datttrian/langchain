@@ -3,7 +3,6 @@ from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.llms.llamafile import Llamafile
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -26,11 +25,6 @@ vectorstore = Chroma.from_documents(
 
 # Initialize the Llamafile language model
 llm = Llamafile()
-
-# Define a prompt template for summarizing the main themes in the retrieved documents
-prompt = PromptTemplate.from_template(
-    "Summarize the main themes in these retrieved docs: {docs}"
-)
 
 
 # Define a function to format documents into a single string
