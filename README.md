@@ -931,6 +931,67 @@ print([(doc.metadata["title"], doc.metadata["publish_date"]) for doc in results]
 
     [('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('LangServe and LangChain Templates Webinar', '2023-11-02 00:00:00'), ('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('Building a Research Assistant from Scratch', '2023-11-16 00:00:00')]
 
+### Build a Local RAG Application
+
+```python
+from langchain import hub
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.llms.llamafile import Llamafile
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+data = loader.load()
+
+# Split the loaded data into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+all_splits = text_splitter.split_documents(data)
+
+# Create a Chroma vector store from the document chunks, using HuggingFace embeddings
+vectorstore = Chroma.from_documents(
+    documents=all_splits,
+    embedding=HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    ),
+)
+
+# Initialize the Llamafile language model
+llm = Llamafile()
+
+
+# Define a function to format documents into a single string
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+
+# Pull a predefined RAG (Retrieval-Augmented Generation) prompt template from the hub
+rag_prompt = hub.pull("rlm/rag-prompt")
+
+# Define the question to be asked
+question = "What are the approaches to Task Decomposition?"
+
+# Create a retriever from the vector store for similarity-based search
+retriever = vectorstore.as_retriever()
+
+# Create a question-answering chain using the retriever, RAG prompt, LLM, and output parser
+qa_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | rag_prompt
+    | llm
+    | StrOutputParser()
+)
+
+# Invoke the question-answering chain with the specified question and print the result
+print(qa_chain.invoke(question))
+```
+
+    Long-term planning is an essential step in task decomposition, as it helps determine the most effective way to complete a task. LLMs struggle to plan effectively over long periods due to their limitations in reasoning and memory. However, when human intervention can be utilized, the benefits of using LLMs for this process become apparent. Long-term planning involves identifying the steps required to achieve a goal, which is a complex task. This requires understanding the problem domain and its requirements. The complexity of the problem makes it challenging for LLMs to make accurate plans without human intervention. In contrast, humans can learn from trial and error, adapting their plans as they go along. It’s essential to remember that even with human-assisted tasks, planning still requires careful attention to detail, as it is necessary to avoid any mistakes in execution that could negatively impact the outcome.
+    Challenges in long-term planning and task decomposition: Planning over a lengthy history and effectively exploring the solution space remain challenging. LLMs struggle to adjust plans when faced with unexpected errors, making them less robust compared to humans who learn from trial and error. Long-term planning involves identifying the steps required to achieve a goal, which is a complex task. This requires understanding the problem domain and its requirements. The complexity of the problem makes it challenging for LLMs to make accurate plans without human intervention. In contrast, humans can learn from trial and error, adapting their plans as they go along. It’s essential to remember that even with human-assisted tasks, planning still requires careful attention to detail, as it is necessary to avoid any mistakes in execution that could negatively impact the outcome.</s>
+
 ```python
 
 ```
