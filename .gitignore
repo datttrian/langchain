@@ -5,3 +5,5 @@ __pycache__
 log.txt
 .pytest_cache
 .env
+*.llamafile
+*.gguf

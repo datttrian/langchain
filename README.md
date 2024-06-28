@@ -931,6 +931,138 @@ print([(doc.metadata["title"], doc.metadata["publish_date"]) for doc in results]
 
     [('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('LangServe and LangChain Templates Webinar', '2023-11-02 00:00:00'), ('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('Building a Research Assistant from Scratch', '2023-11-16 00:00:00')]
 
+### Build a Local RAG Application
+
+```python
+from langchain import hub
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.llms.llamafile import Llamafile
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+data = loader.load()
+
+# Split the loaded data into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+all_splits = text_splitter.split_documents(data)
+
+# Create a Chroma vector store from the document chunks, using HuggingFace embeddings
+vectorstore = Chroma.from_documents(
+    documents=all_splits,
+    embedding=HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    ),
+)
+
+# Initialize the Llamafile language model
+llm = Llamafile()
+
+
+# Define a function to format documents into a single string
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+
+# Pull a predefined RAG (Retrieval-Augmented Generation) prompt template from the hub
+rag_prompt = hub.pull("rlm/rag-prompt")
+
+# Define the question to be asked
+question = "What are the approaches to Task Decomposition?"
+
+# Create a retriever from the vector store for similarity-based search
+retriever = vectorstore.as_retriever()
+
+# Create a question-answering chain using the retriever, RAG prompt, LLM, and output parser
+qa_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | rag_prompt
+    | llm
+    | StrOutputParser()
+)
+
+# Invoke the question-answering chain with the specified question and print the result
+print(qa_chain.invoke(question))
+```
+
+    Long-term planning is an essential step in task decomposition, as it helps determine the most effective way to complete a task. LLMs struggle to plan effectively over long periods due to their limitations in reasoning and memory. However, when human intervention can be utilized, the benefits of using LLMs for this process become apparent. Long-term planning involves identifying the steps required to achieve a goal, which is a complex task. This requires understanding the problem domain and its requirements. The complexity of the problem makes it challenging for LLMs to make accurate plans without human intervention. In contrast, humans can learn from trial and error, adapting their plans as they go along. It’s essential to remember that even with human-assisted tasks, planning still requires careful attention to detail, as it is necessary to avoid any mistakes in execution that could negatively impact the outcome.
+    Challenges in long-term planning and task decomposition: Planning over a lengthy history and effectively exploring the solution space remain challenging. LLMs struggle to adjust plans when faced with unexpected errors, making them less robust compared to humans who learn from trial and error. Long-term planning involves identifying the steps required to achieve a goal, which is a complex task. This requires understanding the problem domain and its requirements. The complexity of the problem makes it challenging for LLMs to make accurate plans without human intervention. In contrast, humans can learn from trial and error, adapting their plans as they go along. It’s essential to remember that even with human-assisted tasks, planning still requires careful attention to detail, as it is necessary to avoid any mistakes in execution that could negatively impact the outcome.</s>
+
+### Build a PDF ingestion and Question/Answering system
+
+```python
+from dotenv import load_dotenv
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model with the specified version
+llm = ChatOpenAI(model="gpt-4o")
+
+# Define the path to the PDF file
+file_path = "nke-10k-2023.pdf"
+
+# Load the documents from the PDF file
+loader = PyPDFLoader(file_path)
+docs = loader.load()
+
+# Split the loaded documents into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200)
+splits = text_splitter.split_documents(docs)
+
+# Create a Chroma vector store from the document chunks, using OpenAI embeddings
+vectorstore = Chroma.from_documents(
+    documents=splits, embedding=OpenAIEmbeddings())
+
+# Create a retriever from the vector store for similarity-based search
+retriever = vectorstore.as_retriever()
+
+# Define a system prompt for answering questions
+system_prompt = (
+    "You are an assistant for question-answering tasks. "
+    "Use the following pieces of retrieved context to answer "
+    "the question. If you don't know the answer, say that you "
+    "don't know. Use three sentences maximum and keep the "
+    "answer concise."
+    "\n\n"
+    "{context}"
+)
+
+# Create a chat prompt template for answering questions
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
+)
+
+# Create a chain to combine retrieved documents and the question-answering task
+question_answer_chain = create_stuff_documents_chain(llm, prompt)
+
+# Create a retrieval-augmented generation (RAG) chain
+rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+
+# Invoke the RAG chain with a question and retrieve the results
+results = rag_chain.invoke({"input": "What was Nike's revenue in 2023?"})
+
+# Print the results
+print(results)
+```
+
+    {'input': "What was Nike's revenue in 2023?", 'context': [Document(page_content='Table of Contents\nFISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS\nThe following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:\nFISCAL 2023 COMPARED TO FISCAL 2022\n•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.\nThe increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,\n2 and 1 percentage points to NIKE, Inc. Revenues, respectively.\n•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This\nincrease was primarily due to higher revenues in Men\'s, the Jordan Brand, Women\'s and Kids\' which grew 17%, 35%,11% and 10%, respectively, on a wholesale\nequivalent basis.', metadata={'page': 35, 'source': 'nke-10k-2023.pdf'}), Document(page_content='Enterprise Resource Planning Platform, data and analytics, demand sensing, insight gathering, and other areas to create an end-to-end technology foundation, which we\nbelieve will further accelerate our digital transformation. We believe this unified approach will accelerate growth and unlock more efficiency for our business, while driving\nspeed and responsiveness as we serve consumers globally.\nFINANCIAL HIGHLIGHTS\n•In fiscal 2023, NIKE, Inc. achieved record Revenues of $51.2 billion, which increased 10% and 16% on a reported and currency-neutral basis, respectively\n•NIKE Direct revenues grew 14% from $18.7 billion in fiscal 2022 to $21.3 billion in fiscal 2023, and represented approximately 44% of total NIKE Brand revenues for\nfiscal 2023\n•Gross margin for the fiscal year decreased 250 basis points to 43.5% primarily driven by higher product costs, higher markdowns and unfavorable changes in foreign\ncurrency exchange rates, partially offset by strategic pricing actions', metadata={'page': 30, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nNORTH AMERICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 14,897 $ 12,228 22 % 22 %$ 11,644 5 % 5 %\nApparel 5,947 5,492 8 % 9 % 5,028 9 % 9 %\nEquipment 764 633 21 % 21 % 507 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nRevenues by:    \nSales to Wholesale Customers $ 11,273 $ 9,621 17 % 18 %$ 10,186 -6 % -6 %\nSales through NIKE Direct 10,335 8,732 18 % 18 % 6,993 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nEARNINGS BEFORE INTEREST AND TAXES $ 5,454 $ 5,114 7 % $ 5,089 0 %\nFISCAL 2023 COMPARED TO FISCAL 2022\n•North America revenues increased 18% on a currency-neutral basis, primarily due to higher revenues in Men's and the Jordan Brand. NIKE Direct revenues\nincreased 18%, driven by strong digital sales growth of 23%, comparable store sales growth of 9% and the addition of new stores.", metadata={'page': 39, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nEUROPE, MIDDLE EAST & AFRICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 8,260 $ 7,388 12 % 25 %$ 6,970 6 % 9 %\nApparel 4,566 4,527 1 % 14 % 3,996 13 % 16 %\nEquipment 592 564 5 % 18 % 490 15 % 17 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nRevenues by:    \nSales to Wholesale Customers $ 8,522 $ 8,377 2 % 15 %$ 7,812 7 % 10 %\nSales through NIKE Direct 4,896 4,102 19 % 33 % 3,644 13 % 15 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nEARNINGS BEFORE INTEREST AND TAXES $ 3,531 $ 3,293 7 % $ 2,435 35 % \nFISCAL 2023 COMPARED TO FISCAL 2022\n•EMEA revenues increased 21% on a currency-neutral basis, due to higher revenues in Men's, the Jordan Brand, Women's and Kids'. NIKE Direct revenues\nincreased 33%, driven primarily by strong digital sales growth of 43% and comparable store sales growth of 22%.", metadata={'page': 40, 'source': 'nke-10k-2023.pdf'})], 'answer': "Nike's revenue in fiscal 2023 was $51.2 billion."}
+
 ```python
 
 ```
