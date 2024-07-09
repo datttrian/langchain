@@ -436,7 +436,8 @@ disable=raw-checker-failed,
         missing-module-docstring,
         import-error,
         invalid-name,
-        line-too-long
+        line-too-long,
+        duplicate-code
         
 
 
