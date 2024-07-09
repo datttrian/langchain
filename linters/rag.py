@@ -52,8 +52,8 @@ prompt = hub.pull("rlm/rag-prompt")
 
 
 # Function to format the documents into a single string
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+def format_docs(documents):
+    return "\n\n".join(doc.page_content for doc in documents)
 
 
 # Define the RAG (Retrieval-Augmented Generation) chain with context retriever, question passthrough, prompt, and LLM
