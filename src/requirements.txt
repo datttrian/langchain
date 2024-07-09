@@ -1,7 +1,7 @@
 beautifulsoup4==4.12.3
 faiss-cpu==1.8.0.post1
 fastapi==0.111.0
-gpt4all==2.7.0
+gpt4all==0.1.7
 langchain-chroma==0.1.1
 langchain-community==0.2.6
 langchain-core==0.2.10
