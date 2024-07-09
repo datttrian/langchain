@@ -437,7 +437,8 @@ disable=raw-checker-failed,
         import-error,
         invalid-name,
         line-too-long,
-        duplicate-code
+        duplicate-code,
+        consider-using-f-string
         
 
 
