@@ -25,9 +25,9 @@ tools = toolkit.get_tools()
 
 
 # Define a function to run a query on the database and process the results
-def query_as_list(db, query):
+def query_as_list(database, sql_query):
     # Run the query on the database
-    res = db.run(query)
+    res = database.run(sql_query)
     # Parse the result into a list of values
     res = [el for sub in ast.literal_eval(res) for el in sub if el]
     # Remove numeric values and strip whitespace
