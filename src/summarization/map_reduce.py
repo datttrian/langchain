@@ -10,53 +10,46 @@ from langchain_text_splitters import CharacterTextSplitter
 # Load environment variables from a .env file
 load_dotenv()
 
+# Load the data from a web page
 loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
 docs = loader.load()
 
+# Initialize the OpenAI model with the default temperature
 llm = ChatOpenAI(temperature=0)
 
-
+# Pull the map and reduce prompts from the hub
 map_prompt = hub.pull("rlm/map-prompt")
 map_chain = LLMChain(llm=llm, prompt=map_prompt)
 
-# Note we can also get this from the prompt hub, as noted above
 reduce_prompt = hub.pull("rlm/reduce-prompt")
-
-# Run chain
 reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt)
 
-# Takes a list of documents, combines them into a single string, and passes this to an LLMChain
+# Define a StuffDocumentsChain to process the documents
 combine_documents_chain = StuffDocumentsChain(
-    llm_chain=reduce_chain, document_variable_name="doc_summaries"  # added/edited
+    llm_chain=reduce_chain, document_variable_name="doc_summaries"
 )
 
-# Combines and iteratively reduces the mapped documents
+# Define a ReduceDocumentsChain to combine and iteratively reduce the mapped documents
 reduce_documents_chain = ReduceDocumentsChain(
-    # This is final chain that is called.
     combine_documents_chain=combine_documents_chain,
-    # If documents exceed context for `StuffDocumentsChain`
     collapse_documents_chain=combine_documents_chain,
-    # The maximum number of tokens to group documents into.
     token_max=4000,
 )
 
-# Combining documents by mapping a chain over them, then combining results
+# Define a MapReduceDocumentsChain to combine documents by mapping a chain over them and reducing the results
 map_reduce_chain = MapReduceDocumentsChain(
-    # Map chain
     llm_chain=map_chain,
-    # Reduce chain
     reduce_documents_chain=reduce_documents_chain,
-    # The variable name in the llm_chain to put the documents in
     document_variable_name="docs",
-    # Return the results of the map steps in the output
     return_intermediate_steps=False,
 )
 
+# Split the documents into smaller chunks
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
     chunk_size=1000, chunk_overlap=0
 )
 split_docs = text_splitter.split_documents(docs)
 
+# Invoke the MapReduceDocumentsChain with the split documents and print the result
 result = map_reduce_chain.invoke(split_docs)
-
 print(result["output_text"])
