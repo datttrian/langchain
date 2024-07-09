@@ -21,13 +21,11 @@ loader = PyPDFLoader(file_path)
 docs = loader.load()
 
 # Split the loaded documents into smaller chunks
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000, chunk_overlap=200)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
 
 # Create a Chroma vector store from the document chunks, using OpenAI embeddings
-vectorstore = Chroma.from_documents(
-    documents=splits, embedding=OpenAIEmbeddings())
+vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
 # Create a retriever from the vector store for similarity-based search
 retriever = vectorstore.as_retriever()

@@ -19,15 +19,15 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
 # Define a web base loader to load the contents of the specified blog URL
 loader = WebBaseLoader(
     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
-    bs_kwargs=dict(
-        parse_only=bs4.SoupStrainer(
+    bs_kwargs={
+        "parse_only": bs4.SoupStrainer(
             class_=(
                 "post-content",
                 "post-title",
                 "post-header",
             )  # Specify the classes to parse
         )
-    ),
+    },
 )
 
 # Load the documents from the web page
@@ -52,8 +52,8 @@ prompt = hub.pull("rlm/rag-prompt")
 
 
 # Function to format the documents into a single string
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+def format_docs(documents):
+    return "\n\n".join(doc.page_content for doc in documents)
 
 
 # Define the RAG (Retrieval-Augmented Generation) chain with context retriever, question passthrough, prompt, and LLM
