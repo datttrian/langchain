@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from langchain_core.output_parsers import StrOutputParser
@@ -39,6 +40,4 @@ add_routes(
 )
 
 if __name__ == "__main__":
-    import uvicorn
-
     uvicorn.run(app, host="localhost", port=8000)
