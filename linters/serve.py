@@ -10,7 +10,7 @@ from langserve import add_routes
 load_dotenv()
 
 # 1. Create prompt template
-system_template = "Translate the following into {language}:"  # pylint: disable=C0103
+system_template = "Translate the following into {language}:"
 prompt_template = ChatPromptTemplate.from_messages(
     [("system", system_template), ("user", "{text}")]
 )
