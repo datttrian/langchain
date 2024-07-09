@@ -27,8 +27,5 @@ llm_chain = LLMChain(llm=llm, prompt=prompt)
 # Define a StuffDocumentsChain to process the documents
 stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
-# Load the documents again (this line seems redundant since docs are already loaded)
-docs = loader.load()
-
 # Invoke the chain with the loaded documents and print the result
 print(stuff_chain.invoke(docs)["output_text"])
