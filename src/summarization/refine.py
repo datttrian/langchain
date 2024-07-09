@@ -58,7 +58,7 @@ def split_text(text: str):
 
 
 summarize_document_chain = split_text | chain
-summary_result = summarize_document_chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
+summary_result = summarize_document_chain.invoke({"input_documents": split_docs})
 
 # Print the summary result
 print(summary_result["output_text"])
