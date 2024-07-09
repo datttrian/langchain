@@ -50,17 +50,17 @@ chain = load_summarize_chain(
 )
 result = chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
 
-# print(result["output_text"])
+print(result["output_text"])
 
-# print("\n\n".join(result["intermediate_steps"][:3]))
-
-
-def split_text(text: str):
-    return text_splitter.create_documents([text])
+print("\n\n".join(result["intermediate_steps"][:3]))
 
 
-summarize_document_chain = split_text | chain
-summary_result = summarize_document_chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
+# def split_text(text: str):
+#     return text_splitter.create_documents([text])
 
-# Print the summary result
-print(summary_result["output_text"])
+
+# summarize_document_chain = split_text | chain
+# summary_result = summarize_document_chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
+
+# # Print the summary result
+# print(summary_result["output_text"])
