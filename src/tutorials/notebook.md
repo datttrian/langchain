@@ -1,8 +1,221 @@
 # LangChain
 
-## Specialized tasks
+## Summarize text
 
-### Classify text into labels
+### Refine
+
+```python
+from dotenv import load_dotenv
+from langchain.chains.summarize import load_summarize_chain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_text_splitters import CharacterTextSplitter
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+docs = loader.load()
+
+# Initialize the OpenAI model with the default temperature
+llm = ChatOpenAI(temperature=0)
+
+# Split the documents into smaller chunks
+text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+    chunk_size=1000, chunk_overlap=0
+)
+split_docs = text_splitter.split_documents(docs)
+
+# Load the summarize chain with the LLM and chain type "refine"
+chain = load_summarize_chain(llm, chain_type="refine")
+
+# Invoke the chain with the split documents and print the result
+result = chain.invoke(split_docs)
+print(result["output_text"])
+
+# Define a prompt template for summarizing the text
+prompt_template = """Write a concise summary of the following:
+{text}
+CONCISE SUMMARY:"""
+prompt = PromptTemplate.from_template(prompt_template)
+
+# Define a refine prompt template for refining the summary with additional context
+refine_template = (
+    "Your job is to produce a final summary\n"
+    "We have provided an existing summary up to a certain point: {existing_answer}\n"
+    "We have the opportunity to refine the existing summary"
+    "(only if needed) with some more context below.\n"
+    "------------\n"
+    "{text}\n"
+    "------------\n"
+    "Given the new context, refine the original summary in Italian"
+    "If the context isn't useful, return the original summary."
+)
+refine_prompt = PromptTemplate.from_template(refine_template)
+
+# Load the summarize chain with the LLM, chain type "refine", question prompt, and refine prompt
+chain = load_summarize_chain(
+    llm=llm,
+    chain_type="refine",
+    question_prompt=prompt,
+    refine_prompt=refine_prompt,
+    return_intermediate_steps=True,
+    input_key="input_documents",
+    output_key="output_text",
+)
+
+# Invoke the chain with the split documents and print the first three intermediate steps
+result = chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
+print("\n\n".join(result["intermediate_steps"][:3]))
+```
+
+    Created a chunk of size 1003, which is longer than the specified 1000
+
+
+    The refined summary now includes additional context on the challenges faced in long-term planning, task decomposition, reliability of natural language interfaces, and the limitations of LLMs in adjusting plans and handling unexpected errors. The design of the autonomous agent system is highlighted, emphasizing the structured code architecture for building agents powered by Large Language Models. Each component, including the Agent, LanguageModel, and Environment classes, is defined in separate files with specific functionalities. The main file orchestrates the interaction between these components to simulate the autonomous agent's behavior. The summary also includes a citation for further reference. Additional references are provided for further exploration into the advancements in LLM-powered autonomous agents and related research in the field.
+    The article discusses the concept of building autonomous agents powered by LLM (large language model) as the core controller. It explores the components of planning, memory, and tool use in such agents, highlighting their potential for problem-solving and showcasing proof-of-concept examples. The use of LLM extends beyond generating content to being a powerful general problem solver.
+    
+    L'articolo discute il concetto di costruire agenti autonomi alimentati da LLM (large language model) come controller principale. Esplora i componenti di pianificazione, memoria e utilizzo degli strumenti in tali agenti, evidenziando il loro potenziale per la risoluzione dei problemi e mostrando esempi di proof-of-concept. L'uso di LLM si estende oltre la generazione di contenuti per diventare un potente risolutore generale di problemi. Inoltre, vengono presentati approcci come Task Decomposition, Self-Reflection e Reflexion per migliorare le capacità di ragionamento e di auto-miglioramento degli agenti autonomi.
+    
+    L'articolo discute il concetto di costruire agenti autonomi alimentati da LLM (large language model) come controller principale. Esplora i componenti di pianificazione, memoria e utilizzo degli strumenti in tali agenti, evidenziando il loro potenziale per la risoluzione dei problemi e mostrando esempi di proof-of-concept. L'uso di LLM si estende oltre la generazione di contenuti per diventare un potente risolutore generale di problemi. Vengono presentati approcci come Task Decomposition, Self-Reflection e Reflexion per migliorare le capacità di ragionamento e di auto-miglioramento degli agenti autonomi. Inoltre, vengono introdotti nuovi concetti come Chain of Hindsight (CoH) e Algorithm Distillation (AD) che mirano a migliorare le capacità di auto-miglioramento e di apprendimento sequenziale degli agenti autonomi, portando a risultati promettenti nella risoluzione di problemi complessi.
+
+### Map-Reduce
+
+```python
+from dotenv import load_dotenv
+from langchain import hub
+from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.llm import LLMChain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_openai import ChatOpenAI
+from langchain_text_splitters import CharacterTextSplitter
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+docs = loader.load()
+
+# Initialize the OpenAI model with the default temperature
+llm = ChatOpenAI(temperature=0)
+
+# Pull the map and reduce prompts from the hub
+map_prompt = hub.pull("rlm/map-prompt")
+map_chain = LLMChain(llm=llm, prompt=map_prompt)
+
+reduce_prompt = hub.pull("rlm/reduce-prompt")
+reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt)
+
+# Define a StuffDocumentsChain to process the documents
+combine_documents_chain = StuffDocumentsChain(
+    llm_chain=reduce_chain, document_variable_name="doc_summaries"
+)
+
+# Define a ReduceDocumentsChain to combine and iteratively reduce the mapped documents
+reduce_documents_chain = ReduceDocumentsChain(
+    combine_documents_chain=combine_documents_chain,
+    collapse_documents_chain=combine_documents_chain,
+    token_max=4000,
+)
+
+# Define a MapReduceDocumentsChain to combine documents by mapping a chain over them and reducing the results
+map_reduce_chain = MapReduceDocumentsChain(
+    llm_chain=map_chain,
+    reduce_documents_chain=reduce_documents_chain,
+    document_variable_name="docs",
+    return_intermediate_steps=False,
+)
+
+# Split the documents into smaller chunks
+text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+    chunk_size=1000, chunk_overlap=0
+)
+split_docs = text_splitter.split_documents(docs)
+
+# Invoke the MapReduceDocumentsChain with the split documents and print the result
+result = map_reduce_chain.invoke(split_docs)
+print(result["output_text"])
+```
+
+    Created a chunk of size 1003, which is longer than the specified 1000
+
+
+    The main themes identified in the set of documents revolve around the utilization of large language models (LLMs) in building autonomous agents with capabilities such as planning, memory, tool use, and self-reflection. The documents discuss challenges, approaches, and examples of LLM-powered agents like AutoGPT, GPT-Engineer, and BabyAGI. Additionally, topics include algorithm distillation for reinforcement learning, memory types, Maximum Inner Product Search (MIPS), similarity search algorithms, neuro-symbolic architecture, task planning, and execution in AI assistants, as well as real-world applications and case studies of LLMs in various domains. Overall, the documents emphasize the importance of efficient task delegation, automation, performance evaluation, and continuous improvement in utilizing LLMs for diverse applications.
+
+### Stuff
+
+```python
+from dotenv import load_dotenv
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.llm import LLMChain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+docs = loader.load()
+
+# Define the prompt template for summarizing the text
+prompt_template = """Write a concise summary of the following:
+"{text}"
+CONCISE SUMMARY:"""
+prompt = PromptTemplate.from_template(prompt_template)
+
+# Initialize the OpenAI model with specified temperature and model name
+llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
+
+# Create an LLM chain with the model and prompt
+llm_chain = LLMChain(llm=llm, prompt=prompt)
+
+# Define a StuffDocumentsChain to process the documents
+stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+
+# Load the documents again (this line seems redundant since docs are already loaded)
+docs = loader.load()
+
+# Invoke the chain with the loaded documents and print the result
+print(stuff_chain.invoke(docs)["output_text"])
+```
+
+    The article discusses the concept of building autonomous agents powered by large language models (LLMs). It explores the components of such agents, including planning, memory, and tool use. The article provides case studies and examples of proof-of-concept demos, highlighting the challenges and limitations of LLM-powered agents. It also includes citations and references for further reading.
+
+```python
+from dotenv import load_dotenv
+from langchain.chains.summarize import load_summarize_chain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Load the data from a web page
+loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
+docs = loader.load()
+
+# Initialize the OpenAI model with specified temperature and model name
+llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-1106")
+
+# Load the summarize chain with the LLM and chain type "stuff"
+chain = load_summarize_chain(llm, chain_type="stuff")
+
+# Invoke the chain with the loaded documents and get the result
+result = chain.invoke(docs)
+
+# Print the summary output
+print(result["output_text"])
+```
+
+    The article discusses the concept of LLM-powered autonomous agents, which use large language models as their core controllers. It covers the components of these agents, including planning, memory, and tool use, as well as case studies and proof-of-concept examples. The challenges and limitations of using natural language interfaces for these agents are also addressed. The article provides citations and references for further reading.
+
+## Classify text into labels
 
 ```python
 from dotenv import load_dotenv
@@ -56,7 +269,7 @@ print(chain.invoke({"input": inp}))
 
     sentiment='happy' aggressiveness=1 language='spanish'
 
-### Build an Extraction Chain
+## Build an Extraction Chain
 
 ```python
 from typing import List, Optional
@@ -125,9 +338,7 @@ print(result)
 
     people=[Person(name='Jeff', hair_color='black', height_in_meters='1.83'), Person(name='Anna', hair_color='black', height_in_meters=None)]
 
-## Working with external knowledge
-
-### Build a PDF ingestion and Question/Answering system
+## Build a PDF ingestion and Question/Answering system
 
 ```python
 from dotenv import load_dotenv
@@ -196,7 +407,7 @@ print(results)
 
     {'input': "What was Nike's revenue in 2023?", 'context': [Document(page_content='Table of Contents\nFISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS\nThe following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:\nFISCAL 2023 COMPARED TO FISCAL 2022\n•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.\nThe increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,\n2 and 1 percentage points to NIKE, Inc. Revenues, respectively.\n•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This\nincrease was primarily due to higher revenues in Men\'s, the Jordan Brand, Women\'s and Kids\' which grew 17%, 35%,11% and 10%, respectively, on a wholesale\nequivalent basis.', metadata={'page': 35, 'source': 'nke-10k-2023.pdf'}), Document(page_content='Enterprise Resource Planning Platform, data and analytics, demand sensing, insight gathering, and other areas to create an end-to-end technology foundation, which we\nbelieve will further accelerate our digital transformation. We believe this unified approach will accelerate growth and unlock more efficiency for our business, while driving\nspeed and responsiveness as we serve consumers globally.\nFINANCIAL HIGHLIGHTS\n•In fiscal 2023, NIKE, Inc. achieved record Revenues of $51.2 billion, which increased 10% and 16% on a reported and currency-neutral basis, respectively\n•NIKE Direct revenues grew 14% from $18.7 billion in fiscal 2022 to $21.3 billion in fiscal 2023, and represented approximately 44% of total NIKE Brand revenues for\nfiscal 2023\n•Gross margin for the fiscal year decreased 250 basis points to 43.5% primarily driven by higher product costs, higher markdowns and unfavorable changes in foreign\ncurrency exchange rates, partially offset by strategic pricing actions', metadata={'page': 30, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nNORTH AMERICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 14,897 $ 12,228 22 % 22 %$ 11,644 5 % 5 %\nApparel 5,947 5,492 8 % 9 % 5,028 9 % 9 %\nEquipment 764 633 21 % 21 % 507 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nRevenues by:    \nSales to Wholesale Customers $ 11,273 $ 9,621 17 % 18 %$ 10,186 -6 % -6 %\nSales through NIKE Direct 10,335 8,732 18 % 18 % 6,993 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nEARNINGS BEFORE INTEREST AND TAXES $ 5,454 $ 5,114 7 % $ 5,089 0 %\nFISCAL 2023 COMPARED TO FISCAL 2022\n•North America revenues increased 18% on a currency-neutral basis, primarily due to higher revenues in Men's and the Jordan Brand. NIKE Direct revenues\nincreased 18%, driven by strong digital sales growth of 23%, comparable store sales growth of 9% and the addition of new stores.", metadata={'page': 39, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nEUROPE, MIDDLE EAST & AFRICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 8,260 $ 7,388 12 % 25 %$ 6,970 6 % 9 %\nApparel 4,566 4,527 1 % 14 % 3,996 13 % 16 %\nEquipment 592 564 5 % 18 % 490 15 % 17 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nRevenues by:    \nSales to Wholesale Customers $ 8,522 $ 8,377 2 % 15 %$ 7,812 7 % 10 %\nSales through NIKE Direct 4,896 4,102 19 % 33 % 3,644 13 % 15 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nEARNINGS BEFORE INTEREST AND TAXES $ 3,531 $ 3,293 7 % $ 2,435 35 % \nFISCAL 2023 COMPARED TO FISCAL 2022\n•EMEA revenues increased 21% on a currency-neutral basis, due to higher revenues in Men's, the Jordan Brand, Women's and Kids'. NIKE Direct revenues\nincreased 33%, driven primarily by strong digital sales growth of 43% and comparable store sales growth of 22%.", metadata={'page': 40, 'source': 'nke-10k-2023.pdf'})], 'answer': "Nike's revenue in fiscal 2023 was $51.2 billion."}
 
-### Build a local RAG application
+## Build a local RAG application
 
 ```python
 from langchain import hub
@@ -264,7 +475,7 @@ print(qa_chain.invoke(question))
     
     Overall, using task decomposition is a great way to break down complex tasks into smaller, more manageable parts. By providing prompts, feedback, and guidance as needed, you can help your assistant succeed and achieve their goals.</s>
 
-### Build a Query Analysis System
+## Build a Query Analysis System
 
 ```python
 import datetime
@@ -380,7 +591,9 @@ print([(doc.metadata["title"], doc.metadata["publish_date"]) for doc in results]
 
     [('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('LangServe and LangChain Templates Webinar', '2023-11-02 00:00:00'), ('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('Building a Research Assistant from Scratch', '2023-11-16 00:00:00')]
 
-### Build a Question/Answering system over SQL data
+## Build a Question/Answering system over SQL data
+
+### Agents
 
 ```python
 import ast
@@ -491,6 +704,8 @@ for s in agent.stream({"messages": [HumanMessage(content=query)]}):
     {'agent': {'messages': [AIMessage(content='Alice In Chains has 1 album.', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 777, 'total_tokens': 786}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-ea762f3d-a900-47a8-98da-875bb19851ef-0', usage_metadata={'input_tokens': 777, 'output_tokens': 9, 'total_tokens': 786})]}}
     ----
 
+### Chains
+
 ```python
 from operator import itemgetter
 
@@ -555,7 +770,9 @@ print(answer)
 
     There are 8 employees.
 
-### Build a Conversational RAG Application
+## Build a Conversational RAG Application
+
+### Agents
 
 ```python
 import bs4
@@ -658,6 +875,8 @@ for s in agent_executor.stream(
     ----
     {'agent': {'messages': [AIMessage(content='According to the blog post, common ways of task decomposition include:\n\n1. Using LLM with simple prompting, such as "Steps for XYZ" or "What are the subgoals for achieving XYZ?"\n2. Using task-specific instructions, for example, "Write a story outline" for writing a novel.\n3. Involving human inputs in the task decomposition process.\n\nAdditionally, the Tree of Thoughts technique extends the Chain of Thought (CoT) method by exploring multiple reasoning possibilities at each step. It decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier or majority vote.', response_metadata={'token_usage': {'completion_tokens': 152, 'prompt_tokens': 1339, 'total_tokens': 1491}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-84da0fe7-80b7-47dc-a0ee-3393856f3b3e-0', usage_metadata={'input_tokens': 1339, 'output_tokens': 152, 'total_tokens': 1491})]}}
     ----
+
+### Chains
 
 ```python
 import bs4
@@ -807,7 +1026,7 @@ print(
     Task Decomposition is a technique used to break down complex tasks into smaller and simpler steps. It involves transforming big tasks into multiple manageable tasks to make them easier to accomplish. This approach helps agents or models to better understand and interpret the thinking process involved in completing a task.
     One common way of task decomposition is through the use of techniques like Chain of Thought (CoT), where models are instructed to "think step by step" to break down hard tasks. Another approach is to divide the task into smaller subtasks that can be tackled individually. These methods help in enhancing model performance on complex tasks by simplifying the overall process.
 
-### Build a Retrieval Augmented Generation (RAG) Application
+## Build a Retrieval Augmented Generation (RAG) Application
 
 ```python
 import bs4
@@ -882,9 +1101,7 @@ print(rag_chain.invoke("What is Task Decomposition?"))
 
     Task Decomposition involves breaking down complex tasks into smaller and simpler steps. This technique, such as Chain of Thought, helps enhance model performance by transforming big tasks into multiple manageable tasks through a step-by-step approach. It allows for a clearer interpretation of the model's thinking process.
 
-## Basics
-
-### Build an Agent
+## Build an Agent
 
 ```python
 from dotenv import load_dotenv
@@ -937,7 +1154,7 @@ for chunk in agent_executor.stream(
     {'agent': {'messages': [AIMessage(content='The weather in San Francisco for September typically ranges from a low of 57°F to a high of 77°F. There is usually little to no rain during this time. If you would like more detailed information, you can visit [AccuWeather](https://www.accuweather.com/en/us/san-francisco/94103/september-weather/347629) or [Weather25](https://www.weather25.com/north-america/usa/california/san-francisco?page=month&month=September).', response_metadata={'token_usage': {'completion_tokens': 111, 'prompt_tokens': 307, 'total_tokens': 418}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-648f201c-9285-43f3-a157-8de9c00278c1-0', usage_metadata={'input_tokens': 307, 'output_tokens': 111, 'total_tokens': 418})]}}
     ----
 
-### Build vector stores and retrievers
+## Build vector stores and retrievers
 
 ```python
 from dotenv import load_dotenv
@@ -1014,7 +1231,7 @@ print(response.content)
 
     Cats are independent pets that often enjoy their own space.
 
-### Build a Chatbot
+## Build a Chatbot
 
 ```python
 from operator import itemgetter
@@ -1119,7 +1336,7 @@ for r in with_message_history.stream(
 
     |Your| name| is| Bob|.||
 
-### Build a Simple LLM Application with LCEL
+## Build a Simple LLM Application with LCEL
 
 ```python
 #!/usr/bin/env python
