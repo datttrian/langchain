@@ -438,7 +438,8 @@ disable=raw-checker-failed,
         invalid-name,
         line-too-long,
         duplicate-code,
-        consider-using-f-string
+        consider-using-f-string,
+        too-few-public-methods
         
 
 
