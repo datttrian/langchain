@@ -54,6 +54,8 @@ inp = "Estoy increiblemente contento de haberte conocido! Creo que seremos muy b
 print(chain.invoke({"input": inp}))
 ```
 
+    sentiment='happy' aggressiveness=1 language='spanish'
+
 ### Build an Extraction Chain
 
 ```python
@@ -120,6 +122,8 @@ text = "My name is Jeff, my hair is black and i am 6 feet tall. Anna has the sam
 result = runnable.invoke({"text": text})
 print(result)
 ```
+
+    people=[Person(name='Jeff', hair_color='black', height_in_meters='1.83'), Person(name='Anna', hair_color='black', height_in_meters=None)]
 
 ## Working with external knowledge
 
@@ -190,6 +194,8 @@ results = rag_chain.invoke({"input": "What was Nike's revenue in 2023?"})
 print(results)
 ```
 
+    {'input': "What was Nike's revenue in 2023?", 'context': [Document(page_content='Table of Contents\nFISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS\nThe following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:\nFISCAL 2023 COMPARED TO FISCAL 2022\n•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.\nThe increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,\n2 and 1 percentage points to NIKE, Inc. Revenues, respectively.\n•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This\nincrease was primarily due to higher revenues in Men\'s, the Jordan Brand, Women\'s and Kids\' which grew 17%, 35%,11% and 10%, respectively, on a wholesale\nequivalent basis.', metadata={'page': 35, 'source': 'nke-10k-2023.pdf'}), Document(page_content='Enterprise Resource Planning Platform, data and analytics, demand sensing, insight gathering, and other areas to create an end-to-end technology foundation, which we\nbelieve will further accelerate our digital transformation. We believe this unified approach will accelerate growth and unlock more efficiency for our business, while driving\nspeed and responsiveness as we serve consumers globally.\nFINANCIAL HIGHLIGHTS\n•In fiscal 2023, NIKE, Inc. achieved record Revenues of $51.2 billion, which increased 10% and 16% on a reported and currency-neutral basis, respectively\n•NIKE Direct revenues grew 14% from $18.7 billion in fiscal 2022 to $21.3 billion in fiscal 2023, and represented approximately 44% of total NIKE Brand revenues for\nfiscal 2023\n•Gross margin for the fiscal year decreased 250 basis points to 43.5% primarily driven by higher product costs, higher markdowns and unfavorable changes in foreign\ncurrency exchange rates, partially offset by strategic pricing actions', metadata={'page': 30, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nNORTH AMERICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 14,897 $ 12,228 22 % 22 %$ 11,644 5 % 5 %\nApparel 5,947 5,492 8 % 9 % 5,028 9 % 9 %\nEquipment 764 633 21 % 21 % 507 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nRevenues by:    \nSales to Wholesale Customers $ 11,273 $ 9,621 17 % 18 %$ 10,186 -6 % -6 %\nSales through NIKE Direct 10,335 8,732 18 % 18 % 6,993 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nEARNINGS BEFORE INTEREST AND TAXES $ 5,454 $ 5,114 7 % $ 5,089 0 %\nFISCAL 2023 COMPARED TO FISCAL 2022\n•North America revenues increased 18% on a currency-neutral basis, primarily due to higher revenues in Men's and the Jordan Brand. NIKE Direct revenues\nincreased 18%, driven by strong digital sales growth of 23%, comparable store sales growth of 9% and the addition of new stores.", metadata={'page': 39, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nEUROPE, MIDDLE EAST & AFRICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 8,260 $ 7,388 12 % 25 %$ 6,970 6 % 9 %\nApparel 4,566 4,527 1 % 14 % 3,996 13 % 16 %\nEquipment 592 564 5 % 18 % 490 15 % 17 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nRevenues by:    \nSales to Wholesale Customers $ 8,522 $ 8,377 2 % 15 %$ 7,812 7 % 10 %\nSales through NIKE Direct 4,896 4,102 19 % 33 % 3,644 13 % 15 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nEARNINGS BEFORE INTEREST AND TAXES $ 3,531 $ 3,293 7 % $ 2,435 35 % \nFISCAL 2023 COMPARED TO FISCAL 2022\n•EMEA revenues increased 21% on a currency-neutral basis, due to higher revenues in Men's, the Jordan Brand, Women's and Kids'. NIKE Direct revenues\nincreased 33%, driven primarily by strong digital sales growth of 43% and comparable store sales growth of 22%.", metadata={'page': 40, 'source': 'nke-10k-2023.pdf'})], 'answer': "Nike's revenue in fiscal 2023 was $51.2 billion."}
+
 ### Build a local RAG application
 
 ```python
@@ -247,6 +253,16 @@ qa_chain = (
 # Invoke the question-answering chain with the specified question and print the result
 print(qa_chain.invoke(question))
 ```
+
+    Step 1: Determine the task: Task decomposition is used when a given task has multiple subgoals or goals. In this case, it's best to identify the most important goal or goals and then separate them into their respective tasks. For example, "Write a story outline" might be a separate task from "Write a novel."
+    
+    Step 2: Develop prompts for each task: Determine how you will guide the assistant towards achieving each subgoal or goal. Depending on the context, this can involve asking questions, providing instructions, or suggesting solutions. For example, if you're working on writing a novel and your assistant wants to know what the subgoals are, you might give them "Write a story outline."
+    
+    Step 3: Provide feedback and guidance: As the assistant works through each task, provide feedback and guidance as necessary to help them succeed. For example, if they're working on writing a story outline, you may ask them questions about their approach or suggest improvements based on your prior experience with this type of work.
+    
+    Step 4: Celebrate successes: When the assistant completes each task successfully, celebrate their achievement! This can help reinforce and build confidence in their abilities.
+    
+    Overall, using task decomposition is a great way to break down complex tasks into smaller, more manageable parts. By providing prompts, feedback, and guidance as needed, you can help your assistant succeed and achieve their goals.</s>
 
 ### Build a Query Analysis System
 
@@ -362,6 +378,8 @@ results = retrieval_chain.invoke("RAG tutorial published in 2023")
 print([(doc.metadata["title"], doc.metadata["publish_date"]) for doc in results])
 ```
 
+    [('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('LangServe and LangChain Templates Webinar', '2023-11-02 00:00:00'), ('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'), ('Building a Research Assistant from Scratch', '2023-11-16 00:00:00')]
+
 ### Build a Question/Answering system over SQL data
 
 ```python
@@ -462,6 +480,17 @@ for s in agent.stream({"messages": [HumanMessage(content=query)]}):
     print("----")
 ```
 
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_nfil0RLn0K4yO8hLJXK7xcY5', 'function': {'arguments': '{"query":"alis in chain"}', 'name': 'search_proper_nouns'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 674, 'total_tokens': 693}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-0c8c598b-d28d-4186-9d82-7228f1618f76-0', tool_calls=[{'name': 'search_proper_nouns', 'args': {'query': 'alis in chain'}, 'id': 'call_nfil0RLn0K4yO8hLJXK7xcY5'}], usage_metadata={'input_tokens': 674, 'output_tokens': 19, 'total_tokens': 693})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='Alice In Chains\n\nAisha Duo\n\nXis\n\nDa Lama Ao Caos\n\nA-Sides', name='search_proper_nouns', tool_call_id='call_nfil0RLn0K4yO8hLJXK7xcY5')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_Y1jpNuia5BXlZvzreUbsv2uO', 'function': {'arguments': '{"query":"SELECT COUNT(*) AS album_count FROM Album WHERE ArtistId IN (SELECT ArtistId FROM Artist WHERE Name = \'Alice In Chains\')"}', 'name': 'sql_db_query'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 40, 'prompt_tokens': 724, 'total_tokens': 764}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-30a2eb63-6d03-498e-b9bf-efefb0a77fae-0', tool_calls=[{'name': 'sql_db_query', 'args': {'query': "SELECT COUNT(*) AS album_count FROM Album WHERE ArtistId IN (SELECT ArtistId FROM Artist WHERE Name = 'Alice In Chains')"}, 'id': 'call_Y1jpNuia5BXlZvzreUbsv2uO'}], usage_metadata={'input_tokens': 724, 'output_tokens': 40, 'total_tokens': 764})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='[(1,)]', name='sql_db_query', tool_call_id='call_Y1jpNuia5BXlZvzreUbsv2uO')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='Alice In Chains has 1 album.', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 777, 'total_tokens': 786}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-ea762f3d-a900-47a8-98da-875bb19851ef-0', usage_metadata={'input_tokens': 777, 'output_tokens': 9, 'total_tokens': 786})]}}
+    ----
+
 ```python
 from operator import itemgetter
 
@@ -523,6 +552,8 @@ answer = chain.invoke({"question": "How many employees are there"})
 # Print the answer
 print(answer)
 ```
+
+    There are 8 employees.
 
 ### Build a Conversational RAG Application
 
@@ -615,6 +646,19 @@ for s in agent_executor.stream(
     print("----")
 ```
 
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_KasVENthsc22RFkLShcQO1ro', 'function': {'arguments': '{"query":"Task Decomposition"}', 'name': 'blog_post_retriever'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 68, 'total_tokens': 87}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-d8f6069c-a1e5-4e4d-bec3-0e64fabff736-0', tool_calls=[{'name': 'blog_post_retriever', 'args': {'query': 'Task Decomposition'}, 'id': 'call_KasVENthsc22RFkLShcQO1ro'}], usage_metadata={'input_tokens': 68, 'output_tokens': 19, 'total_tokens': 87})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='Fig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.', name='blog_post_retriever', tool_call_id='call_KasVENthsc22RFkLShcQO1ro')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='Task decomposition is a technique used to break down complex tasks into smaller and simpler steps. This approach involves transforming big tasks into multiple manageable tasks, allowing for a more systematic and structured approach to problem-solving. By decomposing tasks, agents can better understand the steps involved and plan ahead effectively. One common method for task decomposition is the Chain of Thought (CoT) technique, which instructs models to "think step by step" and decompose hard tasks into smaller components. This technique enhances model performance on complex tasks by utilizing more test-time computation.', response_metadata={'token_usage': {'completion_tokens': 110, 'prompt_tokens': 590, 'total_tokens': 700}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-76e138bb-0372-47a9-9890-4fde4fbe155a-0', usage_metadata={'input_tokens': 590, 'output_tokens': 110, 'total_tokens': 700})]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_xHD7lAimugv43jycSvZrbSZ8', 'function': {'arguments': '{"query":"common ways of task decomposition"}', 'name': 'blog_post_retriever'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 21, 'prompt_tokens': 723, 'total_tokens': 744}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-78e75628-1c19-4ce8-804a-7b0487f1d419-0', tool_calls=[{'name': 'blog_post_retriever', 'args': {'query': 'common ways of task decomposition'}, 'id': 'call_xHD7lAimugv43jycSvZrbSZ8'}], usage_metadata={'input_tokens': 723, 'output_tokens': 21, 'total_tokens': 744})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.', name='blog_post_retriever', tool_call_id='call_xHD7lAimugv43jycSvZrbSZ8')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='According to the blog post, common ways of task decomposition include:\n\n1. Using LLM with simple prompting, such as "Steps for XYZ" or "What are the subgoals for achieving XYZ?"\n2. Using task-specific instructions, for example, "Write a story outline" for writing a novel.\n3. Involving human inputs in the task decomposition process.\n\nAdditionally, the Tree of Thoughts technique extends the Chain of Thought (CoT) method by exploring multiple reasoning possibilities at each step. It decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier or majority vote.', response_metadata={'token_usage': {'completion_tokens': 152, 'prompt_tokens': 1339, 'total_tokens': 1491}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-84da0fe7-80b7-47dc-a0ee-3393856f3b3e-0', usage_metadata={'input_tokens': 1339, 'output_tokens': 152, 'total_tokens': 1491})]}}
+    ----
+
 ```python
 import bs4
 from dotenv import load_dotenv
@@ -759,6 +803,9 @@ print(
     )["answer"]
 )
 ```
+
+    Task Decomposition is a technique used to break down complex tasks into smaller and simpler steps. It involves transforming big tasks into multiple manageable tasks to make them easier to accomplish. This approach helps agents or models to better understand and interpret the thinking process involved in completing a task.
+    One common way of task decomposition is through the use of techniques like Chain of Thought (CoT), where models are instructed to "think step by step" to break down hard tasks. Another approach is to divide the task into smaller subtasks that can be tackled individually. These methods help in enhancing model performance on complex tasks by simplifying the overall process.
 
 ### Build a Retrieval Augmented Generation (RAG) Application
 
@@ -833,150 +880,7 @@ rag_chain = (
 print(rag_chain.invoke("What is Task Decomposition?"))
 ```
 
-```python
-import bs4
-from dotenv import load_dotenv
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_chroma import Chroma
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_community.document_loaders import WebBaseLoader
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-# Load environment variables from a .env file
-load_dotenv()
-
-# Initialize the OpenAI model with the specified version and temperature
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-
-# Construct retriever
-
-# Define a web base loader to load the contents of the specified blog URL
-loader = WebBaseLoader(
-    web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
-    bs_kwargs={
-        "parse_only": bs4.SoupStrainer(
-            class_=(
-                "post-content",
-                "post-title",
-                "post-header",
-            )  # Specify the classes to parse
-        )
-    },
-)
-
-# Load the documents from the web page
-docs = loader.load()
-
-# Define a text splitter to chunk the documents into smaller pieces
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-
-# Split the loaded documents into chunks
-splits = text_splitter.split_documents(docs)
-
-# Create a Chroma vector store from the document chunks, using OpenAI embeddings
-vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
-
-# Create a retriever from the vector store for similarity-based search
-retriever = vectorstore.as_retriever()
-
-# Contextualize question
-
-# Define a system prompt for contextualizing the question
-contextualize_q_system_prompt = (
-    "Given a chat history and the latest user question "
-    "which might reference context in the chat history, "
-    "formulate a standalone question which can be understood "
-    "without the chat history. Do NOT answer the question, "
-    "just reformulate it if needed and otherwise return it as is."
-)
-
-# Create a chat prompt template for contextualizing the question
-contextualize_q_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", contextualize_q_system_prompt),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-# Create a history-aware retriever using the LLM and the contextualize question prompt
-history_aware_retriever = create_history_aware_retriever(
-    llm, retriever, contextualize_q_prompt
-)
-
-# Answer question
-
-# Define a system prompt for answering the question
-system_prompt = (
-    "You are an assistant for question-answering tasks. "
-    "Use the following pieces of retrieved context to answer "
-    "the question. If you don't know the answer, say that you "
-    "don't know. Use three sentences maximum and keep the "
-    "answer concise."
-    "\n\n"
-    "{context}"
-)
-
-# Create a chat prompt template for answering the question
-qa_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system_prompt),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-# Create a chain to combine retrieved documents and the question-answering task
-question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
-
-# Create a retrieval-augmented generation (RAG) chain
-rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-
-# Statefully manage chat history
-
-# Initialize a dictionary to store session histories
-store = {}
-
-
-# Function to retrieve or create a session history
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
-
-
-# Create a runnable with message history for the RAG chain
-conversational_rag_chain = RunnableWithMessageHistory(
-    rag_chain,
-    get_session_history,
-    input_messages_key="input",
-    history_messages_key="chat_history",
-    output_messages_key="answer",
-)
-
-# Invoke the conversational RAG chain with the first query
-print(
-    conversational_rag_chain.invoke(
-        {"input": "What is Task Decomposition?"},
-        config={
-            "configurable": {"session_id": "abc123"}
-        },  # Constructs a key "abc123" in `store`.
-    )["answer"]
-)
-
-# Invoke the conversational RAG chain with the second query
-print(
-    conversational_rag_chain.invoke(
-        {"input": "What are common ways of doing it?"},
-        config={"configurable": {"session_id": "abc123"}},
-    )["answer"]
-)
-```
+    Task Decomposition involves breaking down complex tasks into smaller and simpler steps. This technique, such as Chain of Thought, helps enhance model performance by transforming big tasks into multiple manageable tasks through a step-by-step approach. It allows for a clearer interpretation of the model's thinking process.
 
 ## Basics
 
@@ -1023,6 +927,15 @@ for chunk in agent_executor.stream(
     print(chunk)
     print("----")
 ```
+
+    {'agent': {'messages': [AIMessage(content='Hello Bob! How can I assist you today regarding San Francisco?', response_metadata={'token_usage': {'completion_tokens': 14, 'prompt_tokens': 90, 'total_tokens': 104}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-c2aaf030-867b-48a8-95bb-0bba95ac8913-0', usage_metadata={'input_tokens': 90, 'output_tokens': 14, 'total_tokens': 104})]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_5Hz5aZjPY0XmnJBvvihCl0Wj', 'function': {'arguments': '{"query":"San Francisco weather"}', 'name': 'tavily_search_results_json'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 20, 'prompt_tokens': 119, 'total_tokens': 139}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-544d5b48-e9ca-42b6-b5a8-c3771c972c67-0', tool_calls=[{'name': 'tavily_search_results_json', 'args': {'query': 'San Francisco weather'}, 'id': 'call_5Hz5aZjPY0XmnJBvvihCl0Wj'}], usage_metadata={'input_tokens': 119, 'output_tokens': 20, 'total_tokens': 139})]}}
+    ----
+    {'tools': {'messages': [ToolMessage(content='[{"url": "https://www.accuweather.com/en/us/san-francisco/94103/july-weather/347629", "content": "Get the monthly weather forecast for San Francisco, CA, including daily high/low, historical averages, to help you plan ahead.Missing:  09/07/2024"}, {"url": "https://www.weather25.com/north-america/usa/california/san-francisco?page=month&month=September", "content": "The temperatures in San Francisco in September are comfortable with low of 57\\u00b0F and and high up to 77\\u00b0F. There is little to no rain in San Francisco during\\u00a0..."}]', name='tavily_search_results_json', tool_call_id='call_5Hz5aZjPY0XmnJBvvihCl0Wj')]}}
+    ----
+    {'agent': {'messages': [AIMessage(content='The weather in San Francisco for September typically ranges from a low of 57°F to a high of 77°F. There is usually little to no rain during this time. If you would like more detailed information, you can visit [AccuWeather](https://www.accuweather.com/en/us/san-francisco/94103/september-weather/347629) or [Weather25](https://www.weather25.com/north-america/usa/california/san-francisco?page=month&month=September).', response_metadata={'token_usage': {'completion_tokens': 111, 'prompt_tokens': 307, 'total_tokens': 418}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-648f201c-9285-43f3-a157-8de9c00278c1-0', usage_metadata={'input_tokens': 307, 'output_tokens': 111, 'total_tokens': 418})]}}
+    ----
 
 ### Build vector stores and retrievers
 
@@ -1098,6 +1011,8 @@ response = rag_chain.invoke("tell me about cats")
 # Print the response content
 print(response.content)
 ```
+
+    Cats are independent pets that often enjoy their own space.
 
 ### Build a Chatbot
 
@@ -1201,6 +1116,8 @@ for r in with_message_history.stream(
 ):
     print(r.content, end="|")
 ```
+
+    |Your| name| is| Bob|.||
 
 ### Build a Simple LLM Application with LCEL
 
