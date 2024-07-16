@@ -30,7 +30,9 @@ class Response(BaseModel):
     output: Union[Joke, ConversationalResponse]
 
 
-structured_llm = llm.with_structured_output(Response)
+structured_llm = llm.with_structured_output(
+    Response, include_raw=True
+)
 
 examples = [
     HumanMessage("Tell me a joke about planes", name="example_user"),
