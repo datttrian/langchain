@@ -407,6 +407,69 @@ print(results)
 
     {'input': "What was Nike's revenue in 2023?", 'context': [Document(page_content='Table of Contents\nFISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS\nThe following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:\nFISCAL 2023 COMPARED TO FISCAL 2022\n•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.\nThe increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,\n2 and 1 percentage points to NIKE, Inc. Revenues, respectively.\n•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This\nincrease was primarily due to higher revenues in Men\'s, the Jordan Brand, Women\'s and Kids\' which grew 17%, 35%,11% and 10%, respectively, on a wholesale\nequivalent basis.', metadata={'page': 35, 'source': 'nke-10k-2023.pdf'}), Document(page_content='Enterprise Resource Planning Platform, data and analytics, demand sensing, insight gathering, and other areas to create an end-to-end technology foundation, which we\nbelieve will further accelerate our digital transformation. We believe this unified approach will accelerate growth and unlock more efficiency for our business, while driving\nspeed and responsiveness as we serve consumers globally.\nFINANCIAL HIGHLIGHTS\n•In fiscal 2023, NIKE, Inc. achieved record Revenues of $51.2 billion, which increased 10% and 16% on a reported and currency-neutral basis, respectively\n•NIKE Direct revenues grew 14% from $18.7 billion in fiscal 2022 to $21.3 billion in fiscal 2023, and represented approximately 44% of total NIKE Brand revenues for\nfiscal 2023\n•Gross margin for the fiscal year decreased 250 basis points to 43.5% primarily driven by higher product costs, higher markdowns and unfavorable changes in foreign\ncurrency exchange rates, partially offset by strategic pricing actions', metadata={'page': 30, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nNORTH AMERICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 14,897 $ 12,228 22 % 22 %$ 11,644 5 % 5 %\nApparel 5,947 5,492 8 % 9 % 5,028 9 % 9 %\nEquipment 764 633 21 % 21 % 507 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nRevenues by:    \nSales to Wholesale Customers $ 11,273 $ 9,621 17 % 18 %$ 10,186 -6 % -6 %\nSales through NIKE Direct 10,335 8,732 18 % 18 % 6,993 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nEARNINGS BEFORE INTEREST AND TAXES $ 5,454 $ 5,114 7 % $ 5,089 0 %\nFISCAL 2023 COMPARED TO FISCAL 2022\n•North America revenues increased 18% on a currency-neutral basis, primarily due to higher revenues in Men's and the Jordan Brand. NIKE Direct revenues\nincreased 18%, driven by strong digital sales growth of 23%, comparable store sales growth of 9% and the addition of new stores.", metadata={'page': 39, 'source': 'nke-10k-2023.pdf'}), Document(page_content="Table of Contents\nEUROPE, MIDDLE EAST & AFRICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 8,260 $ 7,388 12 % 25 %$ 6,970 6 % 9 %\nApparel 4,566 4,527 1 % 14 % 3,996 13 % 16 %\nEquipment 592 564 5 % 18 % 490 15 % 17 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nRevenues by:    \nSales to Wholesale Customers $ 8,522 $ 8,377 2 % 15 %$ 7,812 7 % 10 %\nSales through NIKE Direct 4,896 4,102 19 % 33 % 3,644 13 % 15 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nEARNINGS BEFORE INTEREST AND TAXES $ 3,531 $ 3,293 7 % $ 2,435 35 % \nFISCAL 2023 COMPARED TO FISCAL 2022\n•EMEA revenues increased 21% on a currency-neutral basis, due to higher revenues in Men's, the Jordan Brand, Women's and Kids'. NIKE Direct revenues\nincreased 33%, driven primarily by strong digital sales growth of 43% and comparable store sales growth of 22%.", metadata={'page': 40, 'source': 'nke-10k-2023.pdf'})], 'answer': "Nike's revenue in fiscal 2023 was $51.2 billion."}
 
+## Build a Question Answering application over a Graph Database
+
+```python
+from dotenv import load_dotenv
+from langchain.chains import GraphCypherQAChain
+from langchain_community.graphs import Neo4jGraph
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize a connection to the Neo4j graph database
+graph = Neo4jGraph()
+
+# Define a query to import movie information into the Neo4j graph database
+movies_query = """
+LOAD CSV WITH HEADERS FROM 
+'https://raw.githubusercontent.com/tomasonjo/blog-datasets/main/movies/movies_small.csv'
+AS row
+MERGE (m:Movie {id:row.movieId})
+SET m.released = date(row.released),
+    m.title = row.title,
+    m.imdbRating = toFloat(row.imdbRating)
+FOREACH (director in split(row.director, '|') | 
+    MERGE (p:Person {name:trim(director)})
+    MERGE (p)-[:DIRECTED]->(m))
+FOREACH (actor in split(row.actors, '|') | 
+    MERGE (p:Person {name:trim(actor)})
+    MERGE (p)-[:ACTED_IN]->(m))
+FOREACH (genre in split(row.genres, '|') | 
+    MERGE (g:Genre {name:trim(genre)})
+    MERGE (m)-[:IN_GENRE]->(g))
+"""
+
+# Execute the query to import the movie information
+graph.query(movies_query)
+
+# Refresh the schema to ensure it is up-to-date
+graph.refresh_schema()
+
+# Initialize the OpenAI model with specified temperature and model name
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+
+# Create a GraphCypherQAChain with the graph and LLM, enabling verbose mode and Cypher query validation
+chain = GraphCypherQAChain.from_llm(
+    graph=graph, llm=llm, verbose=True, validate_cypher=True
+)
+
+# Invoke the chain with a query to get the cast of the movie "Casino"
+response = chain.invoke({"query": "What was the cast of the Casino?"})
+print(response)
+```
+
+    [1m> Entering new GraphCypherQAChain chain...[0m
+    Generated Cypher:
+    [32;1m[1;3mMATCH (:Movie {title: 'Casino'})<-[:ACTED_IN]-(actor:Person)
+    RETURN actor.name[0m
+    Full Context:
+    [32;1m[1;3m[{'actor.name': 'Robert De Niro'}, {'actor.name': 'Joe Pesci'}, {'actor.name': 'Sharon Stone'}, {'actor.name': 'James Woods'}][0m
+    
+    [1m> Finished chain.[0m
+    {'query': 'What was the cast of the Casino?', 'result': 'The cast of Casino included Robert De Niro, Joe Pesci, Sharon Stone, and James Woods.'}
+
 ## Build a local RAG application
 
 ```python
