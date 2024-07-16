@@ -1,5 +1,7 @@
 # LangChain
 
+[![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/datttrian/langchain/blob/main/src/notebook.ipynb)
+
 ## How to return structured data from a model
 
 ### Custom structured output
