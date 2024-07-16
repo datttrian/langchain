@@ -20,36 +20,6 @@ class Joke(BaseModel):
     rating: Optional[int] = Field(description="How funny the joke is, from 1 to 10")
 
 
-structured_llm = llm.with_structured_output(Joke)
-
-structured_llm.invoke("Tell me a joke about cats")
-
-
-json_schema = {
-    "title": "joke",
-    "description": "Joke to tell user.",
-    "type": "object",
-    "properties": {
-        "setup": {
-            "type": "string",
-            "description": "The setup of the joke",
-        },
-        "punchline": {
-            "type": "string",
-            "description": "The punchline to the joke",
-        },
-        "rating": {
-            "type": "integer",
-            "description": "How funny the joke is, from 1 to 10",
-        },
-    },
-    "required": ["setup", "punchline"],
-}
-structured_llm = llm.with_structured_output(json_schema)
-
-structured_llm.invoke("Tell me a joke about cats")
-
-
 class ConversationalResponse(BaseModel):
     """Respond in a conversational manner. Be kind and helpful."""
 
@@ -61,14 +31,6 @@ class Response(BaseModel):
 
 
 structured_llm = llm.with_structured_output(Response)
-
-structured_llm.invoke("Tell me a joke about cats")
-
-
-structured_llm.invoke("How are you today?")
-
-
-structured_llm = llm.with_structured_output(json_schema)
 
 for chunk in structured_llm.stream("Tell me a joke about cats"):
     print(chunk)
