@@ -3,16 +3,16 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 from typing import List
-
 from langchain_core.output_parsers import PydanticOutputParser
 
-
+# Load environment variables from a .env file
 load_dotenv()
 
-
+# Initialize the OpenAI model
 llm = ChatOpenAI()
 
 
+# Define a Pydantic model for a person
 class Person(BaseModel):
     """Information about a person."""
 
@@ -22,14 +22,17 @@ class Person(BaseModel):
     )
 
 
+# Define a Pydantic model for a list of people
 class People(BaseModel):
     """Identifying information about all people in a text."""
 
     people: List[Person]
 
 
+# Create a Pydantic output parser for the People model
 parser = PydanticOutputParser(pydantic_object=People)
 
+# Define a chat prompt template
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -40,10 +43,11 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 ).partial(format_instructions=parser.get_format_instructions())
 
-
+# Define the query
 query = "Anna is 23 years old and she is 6 feet tall"
 
-
+# Create a chain by combining the prompt, the LLM, and the parser
 chain = prompt | llm | parser
 
+# Invoke the chain with the query and print the result
 print(chain.invoke({"query": query}))
