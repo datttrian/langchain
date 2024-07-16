@@ -30,31 +30,7 @@ class Response(BaseModel):
     output: Union[Joke, ConversationalResponse]
 
 
-structured_llm = llm.with_structured_output(Response)
-
-for chunk in structured_llm.stream("Tell me a joke about cats"):
-    print(chunk)
-
-
-system = """You are a hilarious comedian. Your specialty is knock-knock jokes. \
-Return a joke which has the setup (the response to "Who's there?") and the final punchline (the response to "<setup> who?").
-
-Here are some examples of jokes:
-
-example_user: Tell me a joke about planes
-example_assistant: {{"setup": "Why don't planes ever get tired?", "punchline": "Because they have rest wings!", "rating": 2}}
-
-example_user: Tell me another joke about planes
-example_assistant: {{"setup": "Cargo", "punchline": "Cargo 'vroom vroom', but planes go 'zoom zoom'!", "rating": 10}}
-
-example_user: Now about caterpillars
-example_assistant: {{"setup": "Caterpillar", "punchline": "Caterpillar really slow, but watch me turn into a butterfly and steal the show!", "rating": 5}}"""
-
-prompt = ChatPromptTemplate.from_messages([("system", system), ("human", "{input}")])
-
-few_shot_structured_llm = prompt | structured_llm
-few_shot_structured_llm.invoke("what's something funny about woodpeckers")
-
+structured_llm = llm.with_structured_output(Response, include_raw=True)
 
 examples = [
     HumanMessage("Tell me a joke about planes", name="example_user"),
@@ -119,18 +95,4 @@ prompt = ChatPromptTemplate.from_messages(
     [("system", system), ("placeholder", "{examples}"), ("human", "{input}")]
 )
 few_shot_structured_llm = prompt | structured_llm
-few_shot_structured_llm.invoke({"input": "crocodiles", "examples": examples})
-
-
-structured_llm = llm.with_structured_output(Joke, method="json_mode")
-
-structured_llm.invoke(
-    "Tell me a joke about cats, respond in JSON with `setup` and `punchline` keys"
-)
-
-
-structured_llm = llm.with_structured_output(Joke, include_raw=True)
-
-structured_llm.invoke(
-    "Tell me a joke about cats, respond in JSON with `setup` and `punchline` keys"
-)
+print(few_shot_structured_llm.invoke({"input": "crocodiles", "examples": examples}))
