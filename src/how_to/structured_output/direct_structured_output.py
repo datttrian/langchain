@@ -1,9 +1,10 @@
+from typing import List
+
 from dotenv import load_dotenv
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
-from typing import List
-from langchain_core.output_parsers import PydanticOutputParser
 
 # Load environment variables from a .env file
 load_dotenv()

@@ -66,8 +66,8 @@ def extract_json(message: AIMessage) -> List[dict]:
     # Return the list of matched JSON strings, stripping any leading or trailing whitespace
     try:
         return [json.loads(match.strip()) for match in matches]
-    except Exception:
-        raise ValueError(f"Failed to parse: {message}")
+    except Exception as exc:
+        raise ValueError(f"Failed to parse: {message}") from exc
 
 
 # Define the query
