@@ -1,5 +1,271 @@
 # LangChain
 
+## How to return structured data from a model
+
+### Custom structured output
+
+```python
+import json
+import re
+from typing import List
+
+from dotenv import load_dotenv
+from langchain_core.messages import AIMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model with the specified model name
+llm = ChatOpenAI(model="gpt-4")
+
+
+# Define a Pydantic model for a person
+class Person(BaseModel):
+    """Information about a person."""
+
+    name: str = Field(..., description="The name of the person")
+    height_in_meters: float = Field(
+        ..., description="The height of the person expressed in meters."
+    )
+
+
+# Define a Pydantic model for a list of people
+class People(BaseModel):
+    """Identifying information about all people in a text."""
+
+    people: List[Person]
+
+
+# Define a chat prompt template
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Answer the user query. Output your answer as JSON that "
+            "matches the given schema: ```json\n{schema}\n```. "
+            "Make sure to wrap the answer in ```json and ``` tags",
+        ),
+        ("human", "{query}"),
+    ]
+).partial(schema=People.schema())
+
+
+# Custom parser to extract JSON content from a string where JSON is embedded between ```json and ``` tags
+def extract_json(message: AIMessage) -> List[dict]:
+    """Extracts JSON content from a string where JSON is embedded between ```json and ``` tags.
+
+    Parameters:
+        text (str): The text containing the JSON content.
+
+    Returns:
+        list: A list of extracted JSON strings.
+    """
+    text = message.content
+    # Define the regular expression pattern to match JSON blocks
+    pattern = r"```json(.*?)```"
+
+    # Find all non-overlapping matches of the pattern in the string
+    matches = re.findall(pattern, text, re.DOTALL)
+
+    # Return the list of matched JSON strings, stripping any leading or trailing whitespace
+    try:
+        return [json.loads(match.strip()) for match in matches]
+    except Exception as exc:
+        raise ValueError(f"Failed to parse: {message}") from exc
+
+
+# Define the query
+query = "Anna is 23 years old and she is 6 feet tall"
+
+# Create a chain by combining the prompt, the LLM, and the custom parser
+chain = prompt | llm | extract_json
+
+# Invoke the chain with the query and print the result
+print(chain.invoke({"query": query}))
+```
+
+    [{'people': [{'name': 'Anna', 'height_in_meters': 1.8288}]}]
+
+### Direct structured output
+
+```python
+from typing import List
+
+from dotenv import load_dotenv
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model
+llm = ChatOpenAI()
+
+
+# Define a Pydantic model for a person
+class Person(BaseModel):
+    """Information about a person."""
+
+    name: str = Field(..., description="The name of the person")
+    height_in_meters: float = Field(
+        ..., description="The height of the person expressed in meters."
+    )
+
+
+# Define a Pydantic model for a list of people
+class People(BaseModel):
+    """Identifying information about all people in a text."""
+
+    people: List[Person]
+
+
+# Create a Pydantic output parser for the People model
+parser = PydanticOutputParser(pydantic_object=People)
+
+# Define a chat prompt template
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Answer the user query. Wrap the output in `json` tags\n{format_instructions}",
+        ),
+        ("human", "{query}"),
+    ]
+).partial(format_instructions=parser.get_format_instructions())
+
+# Define the query
+query = "Anna is 23 years old and she is 6 feet tall"
+
+# Create a chain by combining the prompt, the LLM, and the parser
+chain = prompt | llm | parser
+
+# Invoke the chain with the query and print the result
+print(chain.invoke({"query": query}))
+```
+
+    people=[Person(name='Anna', height_in_meters=1.83)]
+
+### Few-shot prompting
+
+```python
+from typing import Optional, Union
+
+from dotenv import load_dotenv
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_openai import ChatOpenAI
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the OpenAI model with the specified version and temperature
+llm = ChatOpenAI(model="gpt-4-0125-preview", temperature=0)
+
+
+# Define a Pydantic model for a joke
+class Joke(BaseModel):
+    """Joke to tell user."""
+
+    setup: str = Field(description="The setup of the joke")
+    punchline: str = Field(description="The punchline to the joke")
+    rating: Optional[int] = Field(description="How funny the joke is, from 1 to 10")
+
+
+# Define a Pydantic model for a conversational response
+class ConversationalResponse(BaseModel):
+    """Respond in a conversational manner. Be kind and helpful."""
+
+    response: str = Field(description="A conversational response to the user's query")
+
+
+# Define a Pydantic model for the response which can be either a joke or a conversational response
+class Response(BaseModel):
+    output: Union[Joke, ConversationalResponse]
+
+
+# Create a structured LLM that outputs a Response and includes raw output
+structured_llm = llm.with_structured_output(Response, include_raw=True)
+
+# Define example interactions to improve extraction quality
+examples = [
+    HumanMessage("Tell me a joke about planes", name="example_user"),
+    AIMessage(
+        "",
+        name="example_assistant",
+        tool_calls=[
+            {
+                "name": "joke",
+                "args": {
+                    "setup": "Why don't planes ever get tired?",
+                    "punchline": "Because they have rest wings!",
+                    "rating": 2,
+                },
+                "id": "1",
+            }
+        ],
+    ),
+    ToolMessage("", tool_call_id="1"),
+    HumanMessage("Tell me another joke about planes", name="example_user"),
+    AIMessage(
+        "",
+        name="example_assistant",
+        tool_calls=[
+            {
+                "name": "joke",
+                "args": {
+                    "setup": "Cargo",
+                    "punchline": "Cargo 'vroom vroom', but planes go 'zoom zoom'!",
+                    "rating": 10,
+                },
+                "id": "2",
+            }
+        ],
+    ),
+    ToolMessage("", tool_call_id="2"),
+    HumanMessage("Now about caterpillars", name="example_user"),
+    AIMessage(
+        "",
+        tool_calls=[
+            {
+                "name": "joke",
+                "args": {
+                    "setup": "Caterpillar",
+                    "punchline": "Caterpillar really slow, but watch me turn into a butterfly and steal the show!",
+                    "rating": 5,
+                },
+                "id": "3",
+            }
+        ],
+    ),
+    ToolMessage("", tool_call_id="3"),
+]
+
+# Define a system prompt for the LLM
+system = """You are a hilarious comedian. Your specialty is knock-knock jokes. \
+Return a joke which has the setup (the response to "Who's there?") \
+and the final punchline (the response to "<setup> who?")."""
+
+# Create a chat prompt template with the system prompt and placeholders for examples and user input
+prompt = ChatPromptTemplate.from_messages(
+    [("system", system), ("placeholder", "{examples}"), ("human", "{input}")]
+)
+
+# Combine the prompt template and the structured LLM into a single chain
+few_shot_structured_llm = prompt | structured_llm
+
+# Invoke the chain with the input and examples, and print the result
+result = few_shot_structured_llm.invoke({"input": "crocodiles", "examples": examples})
+print(result)
+```
+
+    {'raw': AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_J2TcBVzyFMue6TO51fjbcWlg', 'function': {'arguments': '{"output":{"setup":"Croco","punchline":"Croco-dial my number, because I\'m about to snap!","rating":7}}', 'name': 'Response'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 31, 'prompt_tokens': 392, 'total_tokens': 423}, 'model_name': 'gpt-4-0125-preview', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-aea5c6e9-53f2-4aed-87bd-bd0d55645476-0', tool_calls=[{'name': 'Response', 'args': {'output': {'setup': 'Croco', 'punchline': "Croco-dial my number, because I'm about to snap!", 'rating': 7}}, 'id': 'call_J2TcBVzyFMue6TO51fjbcWlg', 'type': 'tool_call'}], usage_metadata={'input_tokens': 392, 'output_tokens': 31, 'total_tokens': 423}), 'parsed': Response(output=Joke(setup='Croco', punchline="Croco-dial my number, because I'm about to snap!", rating=7)), 'parsing_error': None}
+
 ## Summarize text
 
 ### Refine
