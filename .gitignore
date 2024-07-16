@@ -7,3 +7,4 @@ log.txt
 .env
 *.llamafile*
 *.gguf
+Neo4j*.txt
