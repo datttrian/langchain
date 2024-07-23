@@ -73,9 +73,6 @@ example_selector = SemanticSimilarityExampleSelector.from_examples(
 # Define the input question
 question = "Who was the father of Mary Ball Washington?"
 
-# Select the most similar example to the input question
-selected_examples = example_selector.select_examples({"question": question})
-
 # Create a few-shot prompt template using the example selector
 prompt = FewShotPromptTemplate(
     example_selector=example_selector,
