@@ -3,13 +3,14 @@ from langchain_core.output_parsers import PydanticToolsParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 
+# Load environment variables from a .env file
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+# Initialize the OpenAI model with the specified model name and temperature
+llm = ChatOpenAI()
 
 
-# Note that the docstrings here are crucial, as they will be passed along
-# to the model along with the class name.
+# Define a Pydantic model for addition
 class Add(BaseModel):
     """Add two integers together."""
 
@@ -17,6 +18,7 @@ class Add(BaseModel):
     b: int = Field(..., description="Second integer")
 
 
+# Define a Pydantic model for multiplication
 class Multiply(BaseModel):
     """Multiply two integers together."""
 
@@ -24,15 +26,20 @@ class Multiply(BaseModel):
     b: int = Field(..., description="Second integer")
 
 
+# Define the Add and Multiply models tools
 tools = [Add, Multiply]
 
-
+# Bind the tools to the LLM
 llm_with_tools = llm.bind_tools(tools)
 
+# Define the query to be processed by the LLM
 query = "What is 3 * 12? Also, what is 11 + 49?"
 
-llm_with_tools.invoke(query).tool_calls
+# Invoke the LLM with tools and print the tool calls
+print(llm_with_tools.invoke(query).tool_calls)
 
-
+# Create a chain by combining the LLM with tools and the Pydantic tools parser
 chain = llm_with_tools | PydanticToolsParser(tools=[Multiply, Add])
+
+# Invoke the chain with the query and print the result
 print(chain.invoke(query))
