@@ -1,10 +1,16 @@
+from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from langchain_openai import OpenAIEmbeddings
 
+# Load environment variables from a .env file
+load_dotenv()
+
+# Define a prompt template for each example
 example_prompt = PromptTemplate.from_template("Question: {question}\n{answer}")
 
+# Define the examples to use for the few-shot prompt
 examples = [
     {
         "question": "Who lived longer, Muhammad Ali or Alan Turing?",
@@ -56,28 +62,18 @@ So the final answer is: No
     },
 ]
 
-
-prompt = FewShotPromptTemplate(
-    examples=examples,
-    example_prompt=example_prompt,
-    suffix="Question: {input}",
-    input_variables=["input"],
-)
-
-
+# Create a semantic similarity example selector
 example_selector = SemanticSimilarityExampleSelector.from_examples(
-    # This is the list of examples available to select from.
-    examples,
-    # This is the embedding class used to produce embeddings which are used to measure semantic similarity.
-    OpenAIEmbeddings(),
-    # This is the VectorStore class that is used to store the embeddings and do a similarity search over.
-    Chroma,
-    # This is the number of examples to produce.
-    k=1,
+    examples=examples,  # List of examples available to select from
+    embeddings=OpenAIEmbeddings(),  # Embedding model to measure semantic similarity  # added/edited
+    vectorstore_cls=Chroma,  # VectorStore class to store embeddings and perform similarity search  # added/edited
+    k=1,  # Number of examples to select
 )
 
-# Select the most similar example to the input.
+# Define the input question
 question = "Who was the father of Mary Ball Washington?"
+
+# Select the most similar example to the input question
 selected_examples = example_selector.select_examples({"question": question})
 print(f"Examples most similar to the input: {question}")
 for example in selected_examples:
@@ -85,6 +81,7 @@ for example in selected_examples:
     for k, v in example.items():
         print(f"{k}: {v}")
 
+# Create a few-shot prompt template using the example selector
 prompt = FewShotPromptTemplate(
     example_selector=example_selector,
     example_prompt=example_prompt,
@@ -92,6 +89,7 @@ prompt = FewShotPromptTemplate(
     input_variables=["input"],
 )
 
+# Invoke the prompt with the input question and print the result
 print(
     prompt.invoke({"input": "Who was the father of Mary Ball Washington?"}).to_string()
 )
