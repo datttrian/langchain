@@ -2,54 +2,110 @@
 
 [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/datttrian/langchain/blob/main/src/notebook.ipynb)
 
-## How to use chat models to call tools
+## How to use few shot examples
 
 ```python
 from dotenv import load_dotenv
-from langchain_core.output_parsers import PydanticToolsParser
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_openai import ChatOpenAI
+from langchain_chroma import Chroma
+from langchain_core.example_selectors import SemanticSimilarityExampleSelector
+from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
+from langchain_openai import OpenAIEmbeddings
 
 # Load environment variables from a .env file
 load_dotenv()
 
-# Initialize the OpenAI model with the specified model name and temperature
-llm = ChatOpenAI()
+# Define a prompt template for each example
+example_prompt = PromptTemplate.from_template("Question: {question}\n{answer}")
 
+# Define the examples to use for the few-shot prompt
+examples = [
+    {
+        "question": "Who lived longer, Muhammad Ali or Alan Turing?",
+        "answer": """
+Are follow up questions needed here: Yes.
+Follow up: How old was Muhammad Ali when he died?
+Intermediate answer: Muhammad Ali was 74 years old when he died.
+Follow up: How old was Alan Turing when he died?
+Intermediate answer: Alan Turing was 41 years old when he died.
+So the final answer is: Muhammad Ali
+""",
+    },
+    {
+        "question": "When was the founder of craigslist born?",
+        "answer": """
+Are follow up questions needed here: Yes.
+Follow up: Who was the founder of craigslist?
+Intermediate answer: Craigslist was founded by Craig Newmark.
+Follow up: When was Craig Newmark born?
+Intermediate answer: Craig Newmark was born on December 6, 1952.
+So the final answer is: December 6, 1952
+""",
+    },
+    {
+        "question": "Who was the maternal grandfather of George Washington?",
+        "answer": """
+Are follow up questions needed here: Yes.
+Follow up: Who was the mother of George Washington?
+Intermediate answer: The mother of George Washington was Mary Ball Washington.
+Follow up: Who was the father of Mary Ball Washington?
+Intermediate answer: The father of Mary Ball Washington was Joseph Ball.
+So the final answer is: Joseph Ball
+""",
+    },
+    {
+        "question": "Are both the directors of Jaws and Casino Royale from the same country?",
+        "answer": """
+Are follow up questions needed here: Yes.
+Follow up: Who is the director of Jaws?
+Intermediate Answer: The director of Jaws is Steven Spielberg.
+Follow up: Where is Steven Spielberg from?
+Intermediate Answer: The United States.
+Follow up: Who is the director of Casino Royale?
+Intermediate Answer: The director of Casino Royale is Martin Campbell.
+Follow up: Where is Martin Campbell from?
+Intermediate Answer: New Zealand.
+So the final answer is: No
+""",
+    },
+]
 
-# Define a Pydantic model for addition
-class Add(BaseModel):
-    """Add two integers together."""
+# Create a semantic similarity example selector
+example_selector = SemanticSimilarityExampleSelector.from_examples(
+    examples=examples,  # List of examples available to select from
+    embeddings=OpenAIEmbeddings(),  # Embedding model to measure semantic similarity  # added/edited
+    vectorstore_cls=Chroma,  # VectorStore class to store embeddings and perform similarity search  # added/edited
+    k=1,  # Number of examples to select
+)
 
-    a: int = Field(..., description="First integer")
-    b: int = Field(..., description="Second integer")
+# Define the input question
+question = "Who was the father of Mary Ball Washington?"
 
+# Select the most similar example to the input question
+selected_examples = example_selector.select_examples({"question": question})
 
-# Define a Pydantic model for multiplication
-class Multiply(BaseModel):
-    """Multiply two integers together."""
+# Create a few-shot prompt template using the example selector
+prompt = FewShotPromptTemplate(
+    example_selector=example_selector,
+    example_prompt=example_prompt,
+    suffix="Question: {input}",
+    input_variables=["input"],
+)
 
-    a: int = Field(..., description="First integer")
-    b: int = Field(..., description="Second integer")
-
-
-# Define the Add and Multiply models tools
-tools = [Add, Multiply]
-
-# Bind the tools to the LLM
-llm_with_tools = llm.bind_tools(tools)
-
-# Define the query to be processed by the LLM
-query = "What is 3 * 12? Also, what is 11 + 49?"
-
-# Create a chain by combining the LLM with tools and the Pydantic tools parser
-chain = llm_with_tools | PydanticToolsParser(tools=[Multiply, Add])
-
-# Invoke the chain with the query and print the result
-print(chain.invoke(query))
+# Invoke the prompt with the input question and print the result
+print(prompt.invoke({"input": question}).to_string())
 ```
 
-    [Multiply(a=3, b=12), Add(a=11, b=49)]
+    Question: Who was the maternal grandfather of George Washington?
+    
+    Are follow up questions needed here: Yes.
+    Follow up: Who was the mother of George Washington?
+    Intermediate answer: The mother of George Washington was Mary Ball Washington.
+    Follow up: Who was the father of Mary Ball Washington?
+    Intermediate answer: The father of Mary Ball Washington was Joseph Ball.
+    So the final answer is: Joseph Ball
+    
+    
+    Question: Who was the father of Mary Ball Washington?
 
 ## How to return structured data from a model
 

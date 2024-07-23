@@ -85,6 +85,4 @@ prompt = FewShotPromptTemplate(
 )
 
 # Invoke the prompt with the input question and print the result
-print(
-    prompt.invoke({"input": "Who was the father of Mary Ball Washington?"}).to_string()
-)
+print(prompt.invoke({"input": question}).to_string())
