@@ -42,9 +42,6 @@ llm_with_tools = llm.bind_tools(tools)
 # Define the query to be processed by the LLM
 query = "What is 3 * 12? Also, what is 11 + 49?"
 
-# Invoke the LLM with tools and print the tool calls
-print(llm_with_tools.invoke(query).tool_calls)
-
 # Create a chain by combining the LLM with tools and the Pydantic tools parser
 chain = llm_with_tools | PydanticToolsParser(tools=[Multiply, Add])
 
@@ -52,7 +49,6 @@ chain = llm_with_tools | PydanticToolsParser(tools=[Multiply, Add])
 print(chain.invoke(query))
 ```
 
-    [{'name': 'Multiply', 'args': {'a': 3, 'b': 12}, 'id': 'call_SglWsBrOi3xyC5Oz3oBYmvzb', 'type': 'tool_call'}, {'name': 'Add', 'args': {'a': 11, 'b': 49}, 'id': 'call_G1MTxHD7QWfacO9XW6wlfhef', 'type': 'tool_call'}]
     [Multiply(a=3, b=12), Add(a=11, b=49)]
 
 ## How to return structured data from a model
