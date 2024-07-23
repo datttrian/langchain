@@ -75,11 +75,6 @@ question = "Who was the father of Mary Ball Washington?"
 
 # Select the most similar example to the input question
 selected_examples = example_selector.select_examples({"question": question})
-print(f"Examples most similar to the input: {question}")
-for example in selected_examples:
-    print("\n")
-    for k, v in example.items():
-        print(f"{k}: {v}")
 
 # Create a few-shot prompt template using the example selector
 prompt = FewShotPromptTemplate(
@@ -90,6 +85,5 @@ prompt = FewShotPromptTemplate(
 )
 
 # Invoke the prompt with the input question and print the result
-print(
-    prompt.invoke({"input": "Who was the father of Mary Ball Washington?"}).to_string()
-)
+answer = prompt.invoke({"input": question}).to_string()
+print(answer)
